@@ -1,10 +1,12 @@
-const tintColor = "#0a7ea4";
+const primary = "#d18464";
+const neutral = "#ffaf79";
+const secondary = "#fff3eb";
 
 export const Colors = {
   text: "#11181C",
-  background: "#fff",
-  tint: tintColor,
+  background: neutral,
+  tint: primary,
   icon: "#687076",
   tabIconDefault: "#687076",
-  tabIconSelected: tintColor,
+  tabIconSelected: primary,
 };

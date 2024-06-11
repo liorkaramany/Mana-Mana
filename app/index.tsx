@@ -6,6 +6,7 @@ import "react-native-reanimated";
 import { HomeScreen } from "./screens/HomeScreen";
 import { LoginScreen } from "./screens/LoginScreen";
 import { StackParamList } from "./types/navigation";
+import { Colors } from "./config/Colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,7 +30,10 @@ export default function App() {
 
   return (
     <Stack.Navigator
-      screenOptions={{ title: "Mana Mana" }}
+      screenOptions={{
+        title: "Mana Mana",
+        contentStyle: { backgroundColor: Colors.background },
+      }}
       initialRouteName="Home"
     >
       <Stack.Screen name="Home" component={HomeScreen} />
