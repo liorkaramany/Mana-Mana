@@ -3,15 +3,15 @@ import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Button, View } from "react-native";
 
-export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
+export type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
-export const HomeScreen = (props: HomeScreenProps) => {
+export const LoginScreen = (props: LoginScreenProps) => {
   const { navigation } = props;
 
   return (
     <View>
-      <AppText>Home Screen</AppText>
-      <Button title="Login" onPress={() => navigation.navigate("Login")} />
+      <AppText>Login Screen</AppText>
+      <Button title="Home" onPress={() => navigation.navigate("Home")} />
     </View>
   );
 };
