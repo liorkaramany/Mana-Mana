@@ -1,21 +1,13 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-
-import { useColorScheme } from "@/app/hooks/useColorScheme";
-import { Text } from "react-native";
+import { AppText } from "./components/AppText";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("./assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -30,9 +22,5 @@ export default function App() {
     return null;
   }
 
-  return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Text>Config</Text>
-    </ThemeProvider>
-  );
+  return <AppText>Config</AppText>;
 }
