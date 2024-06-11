@@ -13,13 +13,9 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.colman.manamana",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "supportsTablet": true
     },
     "android": {
-      "package": "com.colman.manamana",
-      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -30,10 +26,7 @@
       "output": "static",
       "favicon": "./app/assets/images/favicon.png"
     },
-    "plugins": [
-      "@react-native-firebase/app",
-      ["expo-build-properties", { "ios": { "useFrameworks": "static" } }]
-    ],
+    "plugins": [],
     "experiments": {
       "typedRoutes": true
     }

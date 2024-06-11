@@ -7,6 +7,7 @@ import { HomeScreen } from "./screens/HomeScreen";
 import { LoginScreen } from "./screens/LoginScreen";
 import { StackParamList } from "./types/navigation";
 import { Colors } from "./config/Colors";
+import "./firebase";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
