@@ -25,18 +25,18 @@ export const AppButton = (props: AppButtonProps) => {
     ...rest
   } = props;
 
+  const stylesWithParameters = styles({ variant, radius, size });
+
   return (
     <Pressable
       style={({ pressed }) => [
-        styles({ variant, radius, size }).container,
-        pressed && styles({ variant, radius, size }).containerPressed,
+        stylesWithParameters.container,
+        pressed && stylesWithParameters.containerPressed,
         typeof style === "function" ? style({ pressed }) : style,
       ]}
       {...rest}
     >
-      <Text style={[styles({ variant, radius, size }).title, titleStyle]}>
-        {title}
-      </Text>
+      <Text style={[stylesWithParameters.title, titleStyle]}>{title}</Text>
     </Pressable>
   );
 };
