@@ -9,12 +9,12 @@ export type StylesProps = {
   radius: keyof typeof Radius;
 };
 
-type ColorSet = {
+type ButtonColorSet = {
   background: string;
   textColor: string;
 };
 
-const variantColorSets: Record<ButtonVariant, ColorSet> = {
+const variantColorSets: Record<ButtonVariant, ButtonColorSet> = {
   primary: {
     background: Colors.tint,
     textColor: Colors.white,
