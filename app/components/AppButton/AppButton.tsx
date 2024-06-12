@@ -1,4 +1,4 @@
-import { Pressable, PressableProps, Text } from "react-native";
+import { Pressable, PressableProps, Text, TextStyle } from "react-native";
 import { styles } from "./styles";
 import { Radius } from "@/app/config/Radius";
 
@@ -11,14 +11,16 @@ export type AppButtonProps = PressableProps & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   radius?: keyof typeof Radius;
+  titleStyle?: TextStyle;
 };
 
 export const AppButton = (props: AppButtonProps) => {
   const {
     title,
-    radius = "md",
     variant = "primary",
     size = "md",
+    radius = "md",
+    titleStyle,
     style,
     ...rest
   } = props;
@@ -32,7 +34,9 @@ export const AppButton = (props: AppButtonProps) => {
       ]}
       {...rest}
     >
-      <Text style={styles({ variant, radius, size }).title}>{title}</Text>
+      <Text style={[styles({ variant, radius, size }).title, titleStyle]}>
+        {title}
+      </Text>
     </Pressable>
   );
 };

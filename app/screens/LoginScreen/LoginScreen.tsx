@@ -1,11 +1,11 @@
+import { AppButton } from "@/app/components/AppButton";
 import { AppText } from "@/app/components/AppText";
-import { Colors } from "@/app/config/Colors";
 import { app } from "@/app/firebase";
 import { StackParamList } from "@/app/types/navigation";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { getReactNativePersistence, initializeAuth } from "firebase/auth";
-import { Button, View } from "react-native";
+import { View } from "react-native";
 
 export type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
@@ -19,11 +19,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
   return (
     <View>
       <AppText>Login Screen</AppText>
-      <Button
-        title="Home"
-        color={Colors.tint}
-        onPress={() => navigation.navigate("Home")}
-      />
+      <AppButton title="Home" onPress={() => navigation.navigate("Home")} />
     </View>
   );
 };

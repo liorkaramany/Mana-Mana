@@ -1,9 +1,8 @@
 import { AppButton } from "@/app/components/AppButton";
 import { AppText } from "@/app/components/AppText";
-import { Colors } from "@/app/config/Colors";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Button, View } from "react-native";
+import { View } from "react-native";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -13,26 +12,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
   return (
     <View>
       <AppText>Home Screen</AppText>
-      <Button
-        title="Login"
-        color={Colors.tint}
-        onPress={() => navigation.navigate("Login")}
-      />
-      <AppButton
-        size="sm"
-        radius="md"
-        style={{ marginTop: 30, alignSelf: "center" }}
-        title="App Button"
-      />
-      <AppButton
-        style={{ marginTop: 30, alignSelf: "center" }}
-        title="App Button"
-      />
-      <AppButton
-        size="lg"
-        style={{ marginTop: 30, alignSelf: "center" }}
-        title="App Button"
-      />
+      <AppButton title="Login" onPress={() => navigation.navigate("Login")} />
     </View>
   );
 };
