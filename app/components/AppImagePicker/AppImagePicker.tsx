@@ -12,7 +12,6 @@ import {
 import { AppButton } from "../AppButton";
 import { AppText } from "../AppText";
 import { styles } from "./styles";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export type AppImagePickerProps = {
   imageUri?: string;
@@ -20,6 +19,7 @@ export type AppImagePickerProps = {
   resizeMode?: ImageResizeMode;
   radius?: keyof typeof Radius;
   style?: StyleProp<ViewStyle>;
+  removeButtonStyle?: StyleProp<ViewStyle>;
 };
 
 const requestPermission = async () => {
@@ -37,6 +37,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
     resizeMode = "cover",
     radius = "md",
     style,
+    removeButtonStyle,
   } = props;
 
   const [innerImageUri, setInnerImageUri] = useState<string | undefined>();
@@ -89,7 +90,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
         <AppButton
           radius="xl"
           variant="neutral"
-          style={stylesWithParameters.removeImageButton}
+          style={[stylesWithParameters.removeImageButton, removeButtonStyle]}
           title={<Feather name="x" size={16} />}
           onPress={() => finalOnChangeImageUri(undefined)}
         />
