@@ -5,6 +5,12 @@ export type RecipeIngredient = {
   amount: number;
 };
 
+export type RecipeRating = {
+  recipe: Recipe;
+  user: User;
+  rating: number;
+};
+
 export type Recipe = {
   author: User;
   title: string;
