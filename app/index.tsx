@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { HomeScreen } from "./screens/HomeScreen";
 import { LoginScreen } from "./screens/LoginScreen";
+import { NewRecipe } from "./screens/NewRecipe";
 import { StackParamList } from "./types/navigation";
 import { Colors } from "./config/Colors";
 import "./firebase";
@@ -39,6 +40,7 @@ export default function App() {
     >
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="NewRecipe" component={NewRecipe} />
     </Stack.Navigator>
   );
 }
