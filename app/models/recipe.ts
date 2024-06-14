@@ -6,12 +6,14 @@ export type RecipeIngredient = {
 };
 
 export type RecipeRating = {
+  id: string;
   recipe: Recipe;
   user: User;
   rating: number;
 };
 
 export type Recipe = {
+  id: string;
   author: User;
   title: string;
   image: string;
