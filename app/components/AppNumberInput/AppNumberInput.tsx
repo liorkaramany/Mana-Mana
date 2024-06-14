@@ -1,16 +1,15 @@
+import Feather from "@expo/vector-icons/Feather";
 import { StyleProp, TextStyle, View, ViewStyle } from "react-native";
+import { AppButton } from "../AppButton";
 import { AppTextInput, AppTextInputProps } from "../AppTextInput";
 import { styles } from "./styles";
-import Feather from "@expo/vector-icons/Feather";
-import { AppButton } from "../AppButton";
+import CurrencyInput, { CurrencyInputProps } from "react-native-currency-input";
 
-export type AppNumberInputProps = Omit<AppTextInputProps, "style"> & {
-  style?: StyleProp<ViewStyle>;
-  textInputStyle?: StyleProp<TextStyle>;
-  min?: number;
-  max?: number;
-  allowDecimal?: boolean;
-};
+export type AppNumberInputProps = Omit<CurrencyInputProps, "style"> &
+  Pick<AppTextInputProps, "size" | "radius"> & {
+    style?: StyleProp<ViewStyle>;
+    textInputStyle?: StyleProp<TextStyle>;
+  };
 
 const iconsSizes: Record<NonNullable<AppNumberInputProps["size"]>, number> = {
   sm: 14,
@@ -19,25 +18,40 @@ const iconsSizes: Record<NonNullable<AppNumberInputProps["size"]>, number> = {
 };
 
 export const AppNumberInput = (props: AppNumberInputProps) => {
-  const {
-    min,
-    max,
-    allowDecimal = false,
-    style,
-    textInputStyle,
-    radius = "md",
-    size = "md",
-    ...rest
-  } = props;
+  const { style, textInputStyle, radius = "md", size = "md", ...rest } = props;
 
   const stylesWithParameters = styles({ size, radius });
 
+  const incrementValue = () => {
+    if (props.value != null) {
+      onChange(props.value + 1);
+    }
+  };
+
+  const decrementValue = () => {
+    if (props.value != null) {
+      onChange(props.value - 1);
+    }
+  };
+
+  const onChange = (value: AppNumberInputProps["value"]) => {
+    if (value != null) {
+      props.onChangeValue?.(value);
+    }
+  };
+
   return (
     <View style={[stylesWithParameters.container, style]}>
-      <AppTextInput
-        radius="no"
+      <CurrencyInput
+        onChangeValue={onChange}
+        precision={0}
+        delimiter=","
+        separator="."
+        placeholder="u promised"
         style={[stylesWithParameters.input, textInputStyle]}
-        size={size}
+        renderTextInput={(textInputProps) => (
+          <AppTextInput radius="no" size={size} {...textInputProps} />
+        )}
         {...rest}
       />
       <View style={stylesWithParameters.buttonsContainer}>
@@ -47,6 +61,7 @@ export const AppNumberInput = (props: AppNumberInputProps) => {
           size="sm"
           style={stylesWithParameters.button}
           title={<Feather name="chevron-up" size={iconsSizes[size]} />}
+          onPress={incrementValue}
         />
         <AppButton
           variant="neutral"
@@ -54,6 +69,7 @@ export const AppNumberInput = (props: AppNumberInputProps) => {
           size="sm"
           style={stylesWithParameters.button}
           title={<Feather name="chevron-down" size={iconsSizes[size]} />}
+          onPress={decrementValue}
         />
       </View>
     </View>
