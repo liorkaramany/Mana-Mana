@@ -18,7 +18,12 @@ export type AppMultiSelectProps<T> = Omit<
   };
 
 export const AppMultiSelect = <T,>(props: AppMultiSelectProps<T>) => {
-  const { size = "md", radius = "md", ...rest } = props;
+  const {
+    size = "md",
+    radius = "md",
+    styles: multiSelectStyles,
+    ...rest
+  } = props;
 
   const stylesWithParameters = styles({ size, radius });
 
@@ -35,8 +40,22 @@ export const AppMultiSelect = <T,>(props: AppMultiSelectProps<T>) => {
       IconRenderer={Feather as unknown as ReactNode}
       selectToggleIconComponent={<Feather name="chevron-down" size={16} />}
       styles={{
-        selectToggle: stylesWithParameters.selectToggle,
-        selectToggleText: stylesWithParameters.selectToggleText,
+        ...multiSelectStyles,
+        selectToggle: [
+          stylesWithParameters.selectToggle,
+          multiSelectStyles?.selectToggle,
+        ],
+        selectToggleText: [
+          stylesWithParameters.selectToggleText,
+          multiSelectStyles?.selectToggleText,
+        ],
+        button: [stylesWithParameters.button, multiSelectStyles?.button],
+        chipContainer: [
+          stylesWithParameters.chipContainer,
+          multiSelectStyles?.chipContainer,
+        ],
+        chipText: [stylesWithParameters.chipText, multiSelectStyles?.chipText],
+        chipIcon: [stylesWithParameters.chipIcon, multiSelectStyles?.chipIcon],
       }}
       {...rest}
     />

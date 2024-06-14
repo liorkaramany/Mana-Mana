@@ -45,5 +45,20 @@ export const styles = (props: StylesProps) => {
     selectToggleText: {
       fontSize: sizeSet.fontSize,
     },
+    button: {
+      backgroundColor: Colors.tint,
+    },
+    chipContainer: {
+      backgroundColor: Colors.tint,
+      borderWidth: 0,
+      color: Colors.white,
+    },
+    chipText: {
+      color: Colors.white,
+      fontSize: sizeSet.fontSize,
+    },
+    chipIcon: {
+      color: Colors.white,
+    },
   });
 };
