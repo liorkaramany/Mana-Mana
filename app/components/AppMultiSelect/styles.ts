@@ -16,17 +16,17 @@ type MultiSelectSizeSet = {
 
 const sizeSets: Record<MultiSelectSize, MultiSelectSizeSet> = {
   sm: {
-    paddingVertical: 4,
+    paddingVertical: 9,
     paddingHorizontal: 16,
     fontSize: 12,
   },
   md: {
-    paddingVertical: 6,
+    paddingVertical: 11,
     paddingHorizontal: 20,
     fontSize: 14,
   },
   lg: {
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 24,
     fontSize: 18,
   },
@@ -39,8 +39,8 @@ export const styles = (props: StylesProps) => {
     selectToggle: {
       backgroundColor: Colors.white,
       borderRadius: Radius[props.radius],
-      paddingVertical: sizeSet.paddingVertical,
       paddingHorizontal: sizeSet.paddingHorizontal,
+      paddingVertical: sizeSet.paddingVertical,
     },
     selectToggleText: {
       fontSize: sizeSet.fontSize,
