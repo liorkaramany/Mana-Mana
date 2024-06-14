@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { styles } from "./styles";
 import { Radius } from "@/app/config/Radius";
-import { ReactNode } from "react";
+import { ReactNode, isValidElement } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "neutral";
 
@@ -43,7 +43,11 @@ export const AppButton = (props: AppButtonProps) => {
       ]}
       {...rest}
     >
-      <Text style={[stylesWithParameters.title, titleStyle]}>{title}</Text>
+      {isValidElement(title) ? (
+        title
+      ) : (
+        <Text style={[stylesWithParameters.title, titleStyle]}>{title}</Text>
+      )}
     </Pressable>
   );
 };
