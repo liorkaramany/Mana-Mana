@@ -12,10 +12,11 @@ import {
 import { AppButton } from "../AppButton";
 import { AppText } from "../AppText";
 import { styles } from "./styles";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 export type AppImagePickerProps = {
   imageUri?: string;
-  onChangeImageUri?: (imageUri: string) => void;
+  onChangeImageUri?: (imageUri: string | undefined) => void;
   resizeMode?: ImageResizeMode;
   radius?: keyof typeof Radius;
   style?: StyleProp<ViewStyle>;
@@ -84,6 +85,15 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
         }
         style={stylesWithParameters.uploadImageButton}
       />
+      {finalImageUri != null && (
+        <AppButton
+          radius="xl"
+          variant="neutral"
+          style={stylesWithParameters.removeImageButton}
+          title={<Feather name="x" size={16} />}
+          onPress={() => finalOnChangeImageUri(undefined)}
+        />
+      )}
     </View>
   );
 };

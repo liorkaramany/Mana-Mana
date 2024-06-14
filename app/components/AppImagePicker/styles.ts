@@ -16,6 +16,7 @@ export const styles = (props: StylesProps) => {
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
+      position: "relative",
     },
     uploadImageButton: {
       paddingHorizontal: 0,
@@ -34,6 +35,13 @@ export const styles = (props: StylesProps) => {
     image: {
       flex: 1,
       aspectRatio: 4 / 3,
+    },
+    removeImageButton: {
+      position: "absolute",
+      top: 8,
+      right: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 12,
     },
   });
 };
