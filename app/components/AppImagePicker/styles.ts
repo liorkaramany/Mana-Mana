@@ -32,6 +32,16 @@ export const styles = (props: StylesProps) => {
     uploadImageButtonContentText: {
       fontSize: 20,
     },
+    grantPermissionButtonContent: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+    },
+    grantPermissionButtonContentText: {
+      fontSize: 20,
+      textAlign: "center",
+      marginHorizontal: 4,
+    },
     image: {
       flex: 1,
       aspectRatio: 4 / 3,

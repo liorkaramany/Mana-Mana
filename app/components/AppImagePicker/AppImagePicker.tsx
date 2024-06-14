@@ -25,9 +25,7 @@ export type AppImagePickerProps = {
 const requestPermission = async () => {
   const response = await ImagePicker.requestCameraPermissionsAsync();
 
-  if (!response.granted) {
-    alert("You need to accept camera permissions");
-  }
+  return response.granted;
 };
 
 export const AppImagePicker = (props: AppImagePickerProps) => {
@@ -41,15 +39,17 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
   } = props;
 
   const [innerImageUri, setInnerImageUri] = useState<string | undefined>();
+  const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
 
   const finalImageUri = imageUri ?? innerImageUri;
   const finalOnChangeImageUri = onChangeImageUri ?? setInnerImageUri;
 
   const stylesWithParameters = styles({ radius });
 
-  useEffect(() => {
-    requestPermission();
-  }, []);
+  const requestAndGrantPermission = async () => {
+    const granted = await requestPermission();
+    setPermissionGranted(granted);
+  };
 
   const selectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();
@@ -61,32 +61,53 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
 
   return (
     <View style={[stylesWithParameters.container, style]}>
-      <AppButton
-        onPress={selectImage}
-        variant="neutral"
-        radius="no"
-        title={
-          finalImageUri != null ? (
-            <Image
-              resizeMode={resizeMode}
-              source={{ uri: finalImageUri }}
-              style={stylesWithParameters.image}
-            />
-          ) : (
-            <View style={stylesWithParameters.uploadImageButtonContent}>
-              <Feather name="upload" size={24} />
+      {!permissionGranted ? (
+        <AppButton
+          onPress={() => requestAndGrantPermission()}
+          variant="neutral"
+          radius="no"
+          title={
+            <View style={stylesWithParameters.grantPermissionButtonContent}>
+              <Feather name="image" size={24} />
               <AppText
                 type="defaultSemiBold"
-                style={stylesWithParameters.uploadImageButtonContentText}
+                style={stylesWithParameters.grantPermissionButtonContentText}
               >
-                Upload an image
+                No camera permission granted{"\n"}press to grant or grant
+                through the settings
               </AppText>
             </View>
-          )
-        }
-        style={stylesWithParameters.uploadImageButton}
-      />
-      {finalImageUri != null && (
+          }
+          style={stylesWithParameters.uploadImageButton}
+        />
+      ) : (
+        <AppButton
+          onPress={selectImage}
+          variant="neutral"
+          radius="no"
+          title={
+            finalImageUri != null ? (
+              <Image
+                resizeMode={resizeMode}
+                source={{ uri: finalImageUri }}
+                style={stylesWithParameters.image}
+              />
+            ) : (
+              <View style={stylesWithParameters.uploadImageButtonContent}>
+                <Feather name="upload" size={24} />
+                <AppText
+                  type="defaultSemiBold"
+                  style={stylesWithParameters.uploadImageButtonContentText}
+                >
+                  Upload an image
+                </AppText>
+              </View>
+            )
+          }
+          style={stylesWithParameters.uploadImageButton}
+        />
+      )}
+      {permissionGranted && finalImageUri != null && (
         <AppButton
           radius="xl"
           variant="neutral"
