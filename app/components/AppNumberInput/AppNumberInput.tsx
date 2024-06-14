@@ -18,25 +18,38 @@ const iconsSizes: Record<NonNullable<AppNumberInputProps["size"]>, number> = {
 };
 
 export const AppNumberInput = (props: AppNumberInputProps) => {
-  const { style, textInputStyle, radius = "md", size = "md", ...rest } = props;
+  const {
+    style,
+    textInputStyle,
+    radius = "md",
+    size = "md",
+    precision = 0,
+    ...rest
+  } = props;
 
   const stylesWithParameters = styles({ size, radius });
 
   const incrementValue = () => {
-    if (props.value != null) {
+    if (
+      props.value != null &&
+      (props.maxValue == null || props.value + 1 <= props.maxValue)
+    ) {
       onChange(props.value + 1);
     }
   };
 
   const decrementValue = () => {
-    if (props.value != null) {
+    if (
+      props.value != null &&
+      (props.minValue == null || props.value - 1 >= props.minValue)
+    ) {
       onChange(props.value - 1);
     }
   };
 
   const onChange = (value: AppNumberInputProps["value"]) => {
     if (value != null) {
-      props.onChangeValue?.(value);
+      props.onChangeValue?.(+value.toFixed(precision));
     }
   };
 
@@ -44,7 +57,7 @@ export const AppNumberInput = (props: AppNumberInputProps) => {
     <View style={[stylesWithParameters.container, style]}>
       <CurrencyInput
         onChangeValue={onChange}
-        precision={0}
+        precision={precision}
         delimiter=","
         separator="."
         placeholder="u promised"
