@@ -1,17 +1,24 @@
-import { Pressable, PressableProps, Text, TextStyle } from "react-native";
+import {
+  Pressable,
+  PressableProps,
+  StyleProp,
+  Text,
+  TextStyle,
+} from "react-native";
 import { styles } from "./styles";
 import { Radius } from "@/app/config/Radius";
+import { ReactNode } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "neutral";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type AppButtonProps = PressableProps & {
-  title: string;
+  title: ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
   radius?: keyof typeof Radius;
-  titleStyle?: TextStyle;
+  titleStyle?: StyleProp<TextStyle>;
 };
 
 export const AppButton = (props: AppButtonProps) => {
