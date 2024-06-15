@@ -65,6 +65,7 @@ export const styles = (props: StylesProps) => {
       paddingHorizontal: sizeSet.paddingHorizontal,
       borderRadius: Radius[props.radius],
       justifyContent: "center",
+      alignItems: "center",
     },
     containerPressed: {
       backgroundColor: Color(colorSet.background).darken(0.075).toString(),
