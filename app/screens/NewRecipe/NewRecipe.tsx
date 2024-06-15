@@ -1,8 +1,17 @@
+import {
+  CategoryResponse,
+  CategoryResponseItem,
+  categoriesApi,
+} from "@/app/api/categoriesApi";
+import { AppImagePicker } from "@/app/components/AppImagePicker";
+import { AppMultiSelect } from "@/app/components/AppMultiSelect";
 import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { View } from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, View } from "react-native";
+import { styles } from "./styles";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -12,12 +21,31 @@ export type UploadRecipeScreenProps = NativeStackScreenProps<
 export const NewRecipe = (props: UploadRecipeScreenProps) => {
   const { navigation, route } = props;
 
+  const [categories, setCategories] = useState<CategoryResponse | undefined>();
+  const [selectedCategories, setSelectedCategories] = useState<
+    CategoryResponseItem[]
+  >([]);
+
+  useEffect(() => {
+    categoriesApi.getAllCategories().then(setCategories);
+  }, []);
+
   return (
-    <View>
+    <View style={styles.page}>
       <AppTextInput placeholder="Recipe Title" size="lg" />
-      <AppText type="defaultSemiBold">Tags</AppText>
-      <AppText type="defaultSemiBold">Ingredients</AppText>
-      <AppText type="defaultSemiBold">Instructions</AppText>
+      <ScrollView style={styles.scrollView}>
+        <AppImagePicker />
+        <AppText type="defaultSemiBold">Tags</AppText>
+        <AppMultiSelect
+          items={categories?.categories}
+          uniqueKey="idCategory"
+          displayKey="strCategory"
+          selectedItems={selectedCategories}
+          onSelectedItemsChange={setSelectedCategories}
+        />
+        <AppText type="defaultSemiBold">Ingredients</AppText>
+        <AppText type="defaultSemiBold">Instructions</AppText>
+      </ScrollView>
     </View>
   );
 };
