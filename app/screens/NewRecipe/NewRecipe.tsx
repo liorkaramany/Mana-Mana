@@ -7,12 +7,17 @@ import { AppImagePicker } from "@/app/components/AppImagePicker";
 import { AppMultiSelect } from "@/app/components/AppMultiSelect";
 import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
+import {
+  DEFAULT_INGREDIENT,
+  EditableIngredients,
+} from "@/app/components/EditableIngredients";
+import { EditableInstructions } from "@/app/components/EditableInstructions";
+import { RecipeIngredient } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { styles } from "./styles";
-import { EditableInstructions } from "@/app/components/EditableInstructions";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -27,6 +32,9 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
     CategoryResponseItem[]
   >([]);
   const [instructions, setInstructions] = useState<string[]>([""]);
+  const [ingredients, setIngredients] = useState<RecipeIngredient[]>([
+    { ...DEFAULT_INGREDIENT },
+  ]);
 
   useEffect(() => {
     categoriesApi.getAllCategories().then(setCategories);
@@ -50,6 +58,10 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
               onSelectedItemsChange={setSelectedCategories}
             />
             <AppText type="defaultSemiBold">Ingredients</AppText>
+            <EditableIngredients
+              ingredients={ingredients}
+              onIngredientsChange={setIngredients}
+            />
             <AppText type="defaultSemiBold">Instructions</AppText>
           </View>
         }
