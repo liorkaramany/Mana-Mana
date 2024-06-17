@@ -15,7 +15,7 @@ import { RecipeIngredient } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { styles } from "./styles";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
@@ -44,39 +44,37 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
   return (
     <View style={styles.page}>
       <AppTextInput placeholder="Recipe Title" size="lg" style={styles.title} />
-      <EditableInstructions
-        instructions={instructions}
-        onInstructionsChange={setInstructions}
-        ListHeaderComponent={
-          <View>
-            <AppImagePicker />
-            <AppText type="defaultSemiBold">Tags</AppText>
-            <AppMultiSelect
-              items={categories?.categories}
-              uniqueKey="idCategory"
-              displayKey="strCategory"
-              selectedItems={selectedCategories}
-              onSelectedItemsChange={setSelectedCategories}
-            />
-            <AppText type="defaultSemiBold">Ingredients</AppText>
-            <EditableIngredients
-              ingredients={ingredients}
-              onIngredientsChange={setIngredients}
-            />
-            <AppText type="defaultSemiBold">Instructions</AppText>
-          </View>
-        }
-        ListFooterComponent={
-          <View>
-            <AppButton
-              title="Upload"
-              onPress={uploadRecipe}
-              size="lg"
-              style={styles.uploadButton}
-            />
-          </View>
-        }
-      />
+      <ScrollView>
+        <View>
+          <AppImagePicker />
+          <AppText type="defaultSemiBold">Tags</AppText>
+          <AppMultiSelect
+            items={categories?.categories}
+            uniqueKey="idCategory"
+            displayKey="strCategory"
+            selectedItems={selectedCategories}
+            onSelectedItemsChange={setSelectedCategories}
+          />
+          <AppText type="defaultSemiBold">Ingredients</AppText>
+          <EditableIngredients
+            ingredients={ingredients}
+            onIngredientsChange={setIngredients}
+          />
+          <AppText type="defaultSemiBold">Instructions</AppText>
+        </View>
+        <EditableInstructions
+          instructions={instructions}
+          onInstructionsChange={setInstructions}
+        />
+        <View>
+          <AppButton
+            title="Upload"
+            onPress={uploadRecipe}
+            size="lg"
+            style={styles.uploadButton}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };

@@ -1,11 +1,8 @@
-import { FlatList, FlatListProps } from "react-native";
+import { FlatList, FlatListProps, View } from "react-native";
 import { EditableInstruction } from "../EditableInstruction/EditableInstruction";
 import { styles } from "./styles";
 
-export type EditableInstructionsProps = Pick<
-  FlatListProps<string>,
-  "ListHeaderComponent" | "ListFooterComponent"
-> & {
+export type EditableInstructionsProps = {
   defaultInstructions?: string[];
   instructions?: string[];
   onInstructionsChange?: (instructions: string[]) => void;
@@ -16,8 +13,6 @@ export const EditableInstructions = (props: EditableInstructionsProps) => {
     instructions,
     onInstructionsChange,
     defaultInstructions = [""],
-    ListHeaderComponent,
-    ListFooterComponent,
   } = props;
 
   const finalInstructions = instructions ?? defaultInstructions;
@@ -35,23 +30,19 @@ export const EditableInstructions = (props: EditableInstructionsProps) => {
   };
 
   return (
-    <FlatList
-      ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={ListFooterComponent}
-      contentContainerStyle={styles.flatListContentContainer}
-      data={finalInstructions}
-      renderItem={({ item, index }) => (
+    <View style={styles.container}>
+      {finalInstructions.map((instruction, index) => (
         <EditableInstruction
-          removeDisabled={finalInstructions.length === 1}
-          instruction={item}
           key={index}
+          removeDisabled={finalInstructions.length === 1}
+          instruction={instruction}
           onInstructionChange={(newInstruction) =>
             changeInstruction(index, newInstruction)
           }
           onAdd={() => addInstruction(index)}
           onRemove={() => removeInstruction(index)}
         />
-      )}
-    />
+      ))}
+    </View>
   );
 };
