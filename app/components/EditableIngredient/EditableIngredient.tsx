@@ -5,6 +5,7 @@ import { AppNumberInput } from "../AppNumberInput";
 import { styles } from "./styles";
 import { AppTextInput } from "../AppTextInput";
 import { RecipeIngredient } from "@/app/models/recipe";
+import { DEFAULT_INGREDIENT } from "@/app/consts";
 
 export type EditableIngredientProps = {
   ingredient?: RecipeIngredient;
@@ -21,7 +22,7 @@ export const EditableIngredient = (props: EditableIngredientProps) => {
   const {
     ingredient,
     onIngredientChange,
-    defaultIngredient = { name: "", amount: 1 },
+    defaultIngredient = DEFAULT_INGREDIENT,
     addDisabled,
     removeDisabled,
     onAdd,
@@ -43,7 +44,7 @@ export const EditableIngredient = (props: EditableIngredientProps) => {
       />
       <AppNumberInput
         precision={1}
-        minValue={0.1}
+        minValue={0}
         value={finalIngredient.amount}
         onChangeValue={(amount) =>
           onIngredientChange?.({
