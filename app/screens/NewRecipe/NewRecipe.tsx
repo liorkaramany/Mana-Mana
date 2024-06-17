@@ -7,10 +7,7 @@ import { AppImagePicker } from "@/app/components/AppImagePicker";
 import { AppMultiSelect } from "@/app/components/AppMultiSelect";
 import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
-import {
-  DEFAULT_INGREDIENT,
-  EditableIngredients,
-} from "@/app/components/EditableIngredients";
+import { EditableIngredients } from "@/app/components/EditableIngredients";
 import { EditableInstructions } from "@/app/components/EditableInstructions";
 import { RecipeIngredient } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
@@ -18,6 +15,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { styles } from "./styles";
+import { DEFAULT_INGREDIENT } from "@/app/consts";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
