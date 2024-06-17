@@ -17,6 +17,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { styles } from "./styles";
+import { NewRecipeSection } from "@/app/components/NewRecipeSection";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -44,10 +45,9 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
   return (
     <View style={styles.page}>
       <AppTextInput placeholder="Recipe Title" size="lg" style={styles.title} />
-      <ScrollView>
-        <View>
-          <AppImagePicker />
-          <AppText type="defaultSemiBold">Tags</AppText>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <AppImagePicker />
+        <NewRecipeSection title="Tags">
           <AppMultiSelect
             items={categories?.categories}
             uniqueKey="idCategory"
@@ -55,25 +55,25 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
             selectedItems={selectedCategories}
             onSelectedItemsChange={setSelectedCategories}
           />
-          <AppText type="defaultSemiBold">Ingredients</AppText>
+        </NewRecipeSection>
+        <NewRecipeSection title="Ingredients">
           <EditableIngredients
             ingredients={ingredients}
             onIngredientsChange={setIngredients}
           />
-          <AppText type="defaultSemiBold">Instructions</AppText>
-        </View>
-        <EditableInstructions
-          instructions={instructions}
-          onInstructionsChange={setInstructions}
-        />
-        <View>
-          <AppButton
-            title="Upload"
-            onPress={uploadRecipe}
-            size="lg"
-            style={styles.uploadButton}
+        </NewRecipeSection>
+        <NewRecipeSection title="Instructions">
+          <EditableInstructions
+            instructions={instructions}
+            onInstructionsChange={setInstructions}
           />
-        </View>
+        </NewRecipeSection>
+        <AppButton
+          title="Upload"
+          onPress={uploadRecipe}
+          size="lg"
+          style={styles.uploadButton}
+        />
       </ScrollView>
     </View>
   );
