@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
     gap: 6,
   },
   textInput: {
-    flex: 1.5,
+    flex: 1,
   },
   numberInput: {
     flex: 1,
