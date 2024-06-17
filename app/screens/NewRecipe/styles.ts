@@ -6,7 +6,11 @@ export const styles = StyleSheet.create({
     paddingTop: 16,
     paddingHorizontal: 16,
   },
-  scrollView: {
+  title: {
+    marginBottom: 16,
+  },
+  uploadButton: {
     marginTop: 16,
+    marginBottom: 8,
   },
 });
