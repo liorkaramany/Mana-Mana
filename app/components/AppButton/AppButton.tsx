@@ -24,6 +24,7 @@ export type AppButtonProps = PressableProps & {
 export const AppButton = (props: AppButtonProps) => {
   const {
     title,
+    disabled,
     variant = "primary",
     size = "md",
     radius = "md",
@@ -32,7 +33,7 @@ export const AppButton = (props: AppButtonProps) => {
     ...rest
   } = props;
 
-  const stylesWithParameters = styles({ variant, radius, size });
+  const stylesWithParameters = styles({ disabled, variant, radius, size });
 
   return (
     <Pressable
@@ -41,6 +42,7 @@ export const AppButton = (props: AppButtonProps) => {
         pressed && stylesWithParameters.containerPressed,
         typeof style === "function" ? style({ pressed }) : style,
       ]}
+      disabled={disabled}
       {...rest}
     >
       {isValidElement(title) ? (

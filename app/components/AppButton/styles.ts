@@ -5,6 +5,7 @@ import { Radius } from "@/app/config/Radius";
 import Color from "color";
 
 export type StylesProps = {
+  disabled?: boolean | null;
   variant: ButtonVariant;
   size: ButtonSize;
   radius: keyof typeof Radius;
@@ -66,6 +67,7 @@ export const styles = (props: StylesProps) => {
       borderRadius: Radius[props.radius],
       justifyContent: "center",
       alignItems: "center",
+      opacity: props.disabled ? 0.55 : 1,
     },
     containerPressed: {
       backgroundColor: Color(colorSet.background).darken(0.075).toString(),

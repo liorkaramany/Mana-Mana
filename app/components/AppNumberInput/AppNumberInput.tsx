@@ -60,7 +60,6 @@ export const AppNumberInput = (props: AppNumberInputProps) => {
         precision={precision}
         delimiter=","
         separator="."
-        placeholder="u promised"
         style={[stylesWithParameters.input, textInputStyle]}
         renderTextInput={(textInputProps) => (
           <AppTextInput radius="no" size={size} {...textInputProps} />
