@@ -1,23 +1,10 @@
-import {
-  CategoryResponse,
-  CategoryResponseItem,
-  categoriesApi,
-} from "@/app/api/categoriesApi";
-import { AppButton } from "@/app/components/AppButton";
-import { AppImagePicker } from "@/app/components/AppImagePicker";
-import { AppMultiSelect } from "@/app/components/AppMultiSelect";
-import { AppText } from "@/app/components/AppText";
-import { AppTextInput } from "@/app/components/AppTextInput";
-import { EditableIngredients } from "@/app/components/EditableIngredients";
-import { EditableInstructions } from "@/app/components/EditableInstructions";
-import { DEFAULT_INGREDIENT } from "@/app/consts";
-import { RecipeIngredient } from "@/app/models/recipe";
+import { CategoryResponse, categoriesApi } from "@/app/api/categoriesApi";
+import { RecipeForm, RecipeFormValueType } from "@/app/components/RecipeForm";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { styles } from "./styles";
-import { NewRecipeSection } from "@/app/components/NewRecipeSection";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -28,53 +15,28 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
   const { navigation, route } = props;
 
   const [categories, setCategories] = useState<CategoryResponse | undefined>();
-  const [selectedCategories, setSelectedCategories] = useState<
-    CategoryResponseItem[]
-  >([]);
-  const [instructions, setInstructions] = useState<string[]>([""]);
-  const [ingredients, setIngredients] = useState<RecipeIngredient[]>([
-    { ...DEFAULT_INGREDIENT },
-  ]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    categoriesApi.getAllCategories().then(setCategories);
+    setIsLoading(true);
+    categoriesApi
+      .getAllCategories()
+      .then(setCategories)
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const uploadRecipe = async () => {};
+  const uploadRecipe = async (recipe: RecipeFormValueType) => {
+    console.log(recipe);
+  };
 
-  return (
-    <View style={styles.page}>
-      <AppTextInput placeholder="Recipe Title" size="lg" style={styles.title} />
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <AppImagePicker />
-        <NewRecipeSection title="Tags">
-          <AppMultiSelect
-            items={categories?.categories}
-            uniqueKey="idCategory"
-            displayKey="strCategory"
-            selectedItems={selectedCategories}
-            onSelectedItemsChange={setSelectedCategories}
-          />
-        </NewRecipeSection>
-        <NewRecipeSection title="Ingredients">
-          <EditableIngredients
-            ingredients={ingredients}
-            onIngredientsChange={setIngredients}
-          />
-        </NewRecipeSection>
-        <NewRecipeSection title="Instructions">
-          <EditableInstructions
-            instructions={instructions}
-            onInstructionsChange={setInstructions}
-          />
-        </NewRecipeSection>
-        <AppButton
-          title="Upload"
-          onPress={uploadRecipe}
-          size="lg"
-          style={styles.uploadButton}
+  if (categories)
+    return (
+      <View style={styles.page}>
+        <RecipeForm
+          style={{ flex: 1 }}
+          categories={categories}
+          onRecipeFormSubmit={uploadRecipe}
         />
-      </ScrollView>
-    </View>
-  );
+      </View>
+    );
 };

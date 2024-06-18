@@ -16,7 +16,7 @@ export type Recipe = {
   id: string;
   author: User;
   title: string;
-  image: string;
+  image?: string;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string[];
