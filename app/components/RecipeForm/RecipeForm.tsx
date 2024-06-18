@@ -12,12 +12,12 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleProp, View, ViewStyle } from "react-native";
 import { styles } from "./styles";
 
-export type RecipeFormReturnType = Omit<Recipe, "id" | "author">;
+export type RecipeFormValueType = Omit<Recipe, "id" | "author">;
 
 export type RecipeFormProps = {
   categories: CategoryResponse;
-  recipe?: Recipe;
-  onRecipeFormSubmit?: (recipe: RecipeFormReturnType) => void;
+  recipe?: RecipeFormValueType;
+  onRecipeFormSubmit?: (recipe: RecipeFormValueType) => void;
   recipeFormSubmitText?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -32,7 +32,7 @@ export const RecipeForm = (props: RecipeFormProps) => {
   } = props;
 
   const [innerRecipe, setInnerRecipe] =
-    useState<RecipeFormReturnType>(DEFAULT_RECIPE_FORM);
+    useState<RecipeFormValueType>(DEFAULT_RECIPE_FORM);
 
   useEffect(() => {
     if (recipe != null) {
@@ -40,10 +40,10 @@ export const RecipeForm = (props: RecipeFormProps) => {
     }
   }, [recipe]);
 
-  const getInnerRecipePropertySetter = <T extends keyof RecipeFormReturnType>(
+  const getInnerRecipePropertySetter = <T extends keyof RecipeFormValueType>(
     property: T
   ) => {
-    return (value: RecipeFormReturnType[T]) =>
+    return (value: RecipeFormValueType[T]) =>
       setInnerRecipe({ ...innerRecipe, [property]: value });
   };
 

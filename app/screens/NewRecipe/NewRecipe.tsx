@@ -1,5 +1,5 @@
 import { CategoryResponse, categoriesApi } from "@/app/api/categoriesApi";
-import { RecipeForm, RecipeFormReturnType } from "@/app/components/RecipeForm";
+import { RecipeForm, RecipeFormValueType } from "@/app/components/RecipeForm";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  const uploadRecipe = async (recipe: RecipeFormReturnType) => {
+  const uploadRecipe = async (recipe: RecipeFormValueType) => {
     console.log(recipe);
   };
 
