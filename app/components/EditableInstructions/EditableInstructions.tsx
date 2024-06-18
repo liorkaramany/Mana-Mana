@@ -1,4 +1,5 @@
-import { FlatList, FlatListProps, View } from "react-native";
+import { DEFAULT_INSTRUCTIONS } from "@/app/consts";
+import { View } from "react-native";
 import { EditableInstruction } from "../EditableInstruction/EditableInstruction";
 import { styles } from "./styles";
 
@@ -12,7 +13,7 @@ export const EditableInstructions = (props: EditableInstructionsProps) => {
   const {
     instructions,
     onInstructionsChange,
-    defaultInstructions = [""],
+    defaultInstructions = DEFAULT_INSTRUCTIONS,
   } = props;
 
   const finalInstructions = instructions ?? defaultInstructions;
