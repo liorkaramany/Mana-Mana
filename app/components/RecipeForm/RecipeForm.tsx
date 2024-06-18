@@ -49,7 +49,13 @@ export const RecipeForm = (props: RecipeFormProps) => {
 
   return (
     <View style={style}>
-      <AppTextInput placeholder="Recipe Title" size="lg" style={styles.title} />
+      <AppTextInput
+        placeholder="Recipe Title"
+        size="lg"
+        style={styles.title}
+        value={innerRecipe.title}
+        onChangeText={getInnerRecipePropertySetter("title")}
+      />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <AppImagePicker
           imageUri={innerRecipe.image}
