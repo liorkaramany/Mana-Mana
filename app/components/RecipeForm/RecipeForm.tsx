@@ -9,7 +9,7 @@ import { NewRecipeSection } from "@/app/components/NewRecipeSection";
 import { DEFAULT_RECIPE_FORM } from "@/app/consts";
 import { Recipe } from "@/app/models/recipe";
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleProp, View, ViewStyle } from "react-native";
 import { styles } from "./styles";
 
 export type RecipeFormReturnType = Omit<Recipe, "id" | "author">;
@@ -19,6 +19,7 @@ export type RecipeFormProps = {
   recipe?: Recipe;
   onRecipeFormSubmit?: (recipe: RecipeFormReturnType) => void;
   recipeFormSubmitText?: string;
+  style?: StyleProp<ViewStyle>;
 };
 
 export const RecipeForm = (props: RecipeFormProps) => {
@@ -27,6 +28,7 @@ export const RecipeForm = (props: RecipeFormProps) => {
     recipe,
     onRecipeFormSubmit,
     recipeFormSubmitText = "Upload",
+    style,
   } = props;
 
   const [innerRecipe, setInnerRecipe] =
@@ -46,10 +48,13 @@ export const RecipeForm = (props: RecipeFormProps) => {
   };
 
   return (
-    <View>
+    <View style={style}>
       <AppTextInput placeholder="Recipe Title" size="lg" style={styles.title} />
       <ScrollView contentContainerStyle={styles.scrollView}>
-        <AppImagePicker />
+        <AppImagePicker
+          imageUri={innerRecipe.image}
+          onChangeImageUri={getInnerRecipePropertySetter("image")}
+        />
         <NewRecipeSection title="Tags">
           <AppMultiSelect
             items={categories.categories}
