@@ -16,7 +16,7 @@ export type RecipeIngredient = {
 };
 
 export type RecipeRating = {
-  recipe: Recipe;
+  recipeId: string;
   user: User;
   rating: number;
 };
