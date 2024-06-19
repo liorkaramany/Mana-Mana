@@ -4,5 +4,5 @@ export type StackParamList = {
   Home: undefined;
   Login: undefined;
   NewRecipe: undefined;
-  Recipe: { recipeId: Recipe["id"] };
+  Recipe: { recipeId: string };
 };
