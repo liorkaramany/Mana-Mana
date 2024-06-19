@@ -1,27 +1,37 @@
 import { useEffect, useState } from "react";
-import { Recipe, findRecipes } from "../models/recipe";
+import {
+  Recipe,
+  createRecipe,
+  findRecipeById,
+  findRecipes,
+  updateRecipe,
+} from "../models/recipe";
+import { useAsync } from "../hooks/useAsync";
 
 export const RecipeViewModel = () => {
-  const [recipes, setRecipes] = useState<Recipe[]>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error>();
+  const {
+    loading,
+    refetch,
+    error,
+    response: recipes,
+  } = useAsync({
+    action: findRecipes,
+  });
 
-  const fetchRecipes = async () => {
-    setLoading(true);
+  const create = async (recipe: Recipe) => await createRecipe(recipe);
 
-    try {
-      const recipes = await findRecipes();
-      setRecipes(recipes);
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
+  const findById = async (id: string) => await findRecipeById(id);
+
+  const update = async (id: string, recipe: Partial<Recipe>) =>
+    updateRecipe(id, recipe);
+
+  return {
+    recipes,
+    loading,
+    error,
+    refetch,
+    create,
+    findById,
+    update,
   };
-
-  useEffect(() => {
-    fetchRecipes();
-  }, []);
-
-  return { recipes, loading, error, refetch: fetchRecipes };
 };
