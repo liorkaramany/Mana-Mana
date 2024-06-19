@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleProp, View, ViewStyle } from "react-native";
 import { styles } from "./styles";
 
-export type RecipeFormValueType = Omit<Recipe, "id" | "author">;
+export type RecipeFormValueType = Omit<Recipe, "author">;
 
 export type RecipeFormProps = {
   categories: CategoryResponse;
