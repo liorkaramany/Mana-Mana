@@ -9,9 +9,17 @@ export type StylesProps = {
 export const styles = (props: StylesProps) => {
   return StyleSheet.create({
     container: {
-      padding: 16,
       backgroundColor: Colors.white,
       borderRadius: Radius[props.radius],
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+    },
+    image: {
+      aspectRatio: 4 / 3,
+    },
+    content: {
+      padding: 16,
     },
   });
 };
