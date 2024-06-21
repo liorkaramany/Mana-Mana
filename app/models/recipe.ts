@@ -2,13 +2,12 @@ import {
   QueryDocumentSnapshot,
   addDoc,
   collection,
+  doc,
   getDoc,
   getDocs,
   updateDoc,
-  doc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { User } from "./user";
 
 export type RecipeIngredient = {
   name: string;
@@ -16,13 +15,13 @@ export type RecipeIngredient = {
 };
 
 export type RecipeRating = {
-  recipe: Recipe;
-  user: User;
+  recipeId: string;
+  userId: string;
   rating: number;
 };
 
 export type Recipe = {
-  author: User;
+  author: string;
   title: string;
   image?: string;
   tags: string[];
@@ -80,4 +79,4 @@ const updateRecipe = async (
   await updateDoc(recipeSnap.ref, recipe);
 };
 
-export { createRecipe, findRecipes, findRecipeById, updateRecipe };
+export { createRecipe, findRecipeById, findRecipes, updateRecipe };
