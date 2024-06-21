@@ -1,4 +1,5 @@
 import {
+  DocumentReference,
   QueryDocumentSnapshot,
   addDoc,
   collection,
@@ -7,8 +8,8 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db, storage } from "../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../firebase";
 import { uriToBlob } from "../utilities";
 
 export type RecipeIngredient = {
@@ -46,17 +47,23 @@ const recipesCollection = collection(db, "recipes").withConverter(
   recipesConverter
 );
 
+const updateRecipeImage = async (
+  recipeReference: DocumentReference<Recipe, Recipe>,
+  image: string
+) => {
+  const imageReference = ref(storage, `images/${recipeReference.id}`);
+  const imageBlob = await uriToBlob(image);
+  const result = await uploadBytes(imageReference, imageBlob);
+  const newImage = await getDownloadURL(result.ref);
+
+  await updateDoc(recipeReference, { image: newImage });
+};
+
 const createRecipe = async (recipe: Recipe): Promise<void> => {
   const recipeDocument = await addDoc(recipesCollection, recipe);
-  const recipeId = recipeDocument.id;
 
   if (recipe.image != null) {
-    const imageReference = ref(storage, `images/${recipeId}`);
-    const imageBlob = await uriToBlob(recipe.image);
-    const result = await uploadBytes(imageReference, imageBlob);
-    const newImage = await getDownloadURL(result.ref);
-
-    await updateDoc(recipeDocument, { image: newImage });
+    await updateRecipeImage(recipeDocument, recipe.image);
   }
 };
 
@@ -91,13 +98,8 @@ const updateRecipe = async (
 
   await updateDoc(recipeSnap.ref, recipe);
 
-  if (recipe.image != null) {
-    const imageReference = ref(storage, `images/${id}`);
-    const imageBlob = await uriToBlob(recipe.image);
-    const result = await uploadBytes(imageReference, imageBlob);
-    const newImage = await getDownloadURL(result.ref);
-
-    await updateDoc(recipeSnap.ref, { image: newImage });
+  if (recipe.image !== undefined && recipe.image !== null) {
+    await updateRecipeImage(recipeSnap.ref, recipe.image);
   }
 
   return recipeSnap.data();
