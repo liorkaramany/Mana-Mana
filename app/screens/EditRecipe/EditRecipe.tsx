@@ -12,59 +12,85 @@ import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 
-export type NewRecipeScreenProps = NativeStackScreenProps<
+export type EditRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
-  "NewRecipe"
+  "EditRecipe"
 >;
 
-export const NewRecipe = (props: NewRecipeScreenProps) => {
+export const EditRecipe = (props: EditRecipeScreenProps) => {
   const { navigation, route } = props;
+  const recipeId = route.params.recipeId;
 
-  const { create: createRecipe } = RecipeViewModel();
+  const { update: updateRecipe, findById: findRecipeById } = RecipeViewModel();
+
+  const {
+    loading: categoriesLoading,
+    error: categoriesError,
+    response: categoryResponse,
+  } = useAsync({ action: categoriesApi.getAllCategories });
 
   const {
     loading,
     error,
-    response: categoryResponse,
-  } = useAsync({ action: categoriesApi.getAllCategories });
+    response: recipe,
+  } = useAsync({ action: async () => await findRecipeById(recipeId) });
 
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [updating, setUpdating] = useState<boolean>(false);
 
   const uploadRecipe = async (recipe: RecipeFormValueType) => {
-    setUploading(true);
+    setUpdating(true);
 
     try {
-      // TODO: Add the correct author ID
-      await createRecipe({ ...recipe, author: "abcde" });
+      await updateRecipe(recipeId, recipe);
+
       Toast.show({
         type: "success",
         text1: "Success!",
-        text2: "The recipe has been created!",
+        text2: "The recipe has been saved!",
       });
     } catch (error) {
       Toast.show({
         type: "error",
         text1: "Oh no!",
-        text2: "There was a problem creating the recipe, please try again.",
+        text2: "There was a problem saving the recipe, please try again.",
       });
     } finally {
-      setUploading(false);
+      setUpdating(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingOverlay}>
+        <AppText style={styles.loadingOverlayText}>Loading recipe...</AppText>
+        <ActivityIndicator color={Colors.tint} size="large" />
+      </View>
+    );
+  }
+
+  if (error || recipe == null) {
+    return (
+      <View style={styles.page}>
+        <AppText>We couldn't load your recipe, please try again later.</AppText>
+      </View>
+    );
+  }
 
   if (categoryResponse != null)
     return (
       <AppLoadingOverlay
-        loading={uploading}
+        loading={updating}
         style={styles.page}
         renderLoading={
           <View style={styles.loadingOverlay}>
-            <AppText style={styles.loadingOverlayText}>Uploading...</AppText>
+            <AppText style={styles.loadingOverlayText}>Saving...</AppText>
             <ActivityIndicator color={Colors.tint} size="large" />
           </View>
         }
       >
         <RecipeForm
+          recipeFormSubmitText="Save"
+          recipe={recipe}
           style={styles.recipeForm}
           categoryResponse={categoryResponse}
           onRecipeFormSubmit={uploadRecipe}

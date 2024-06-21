@@ -74,9 +74,11 @@ const findRecipeById = async (id: string): Promise<Recipe> => {
 const updateRecipe = async (
   id: string,
   recipe: Partial<Recipe>
-): Promise<void> => {
+): Promise<Recipe> => {
   const recipeSnap = await findRecipeDocumentSnapById(id);
   await updateDoc(recipeSnap.ref, recipe);
+
+  return recipeSnap.data();
 };
 
 export { createRecipe, findRecipeById, findRecipes, updateRecipe };
