@@ -69,8 +69,10 @@ export const RecipeForm = (props: RecipeFormProps) => {
       />
       <ScrollView contentContainerStyle={styles.scrollView}>
         <AppImagePicker
-          imageUri={innerRecipe.image}
-          onChangeImageUri={getInnerRecipePropertySetter("image")}
+          imageUri={innerRecipe.image ?? undefined}
+          onChangeImageUri={(value) =>
+            getInnerRecipePropertySetter("image")(value ?? null)
+          }
         />
         <RecipeFormSection title="Tags">
           <AppMultiSelect

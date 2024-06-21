@@ -1,4 +1,5 @@
 import {
+  DocumentReference,
   QueryDocumentSnapshot,
   addDoc,
   collection,
@@ -7,7 +8,9 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../firebase";
+import { uriToBlob } from "../utilities";
 
 export type RecipeIngredient = {
   name: string;
@@ -23,7 +26,7 @@ export type RecipeRating = {
 export type Recipe = {
   author: string;
   title: string;
-  image?: string;
+  image: string | null;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string[];
@@ -44,8 +47,24 @@ const recipesCollection = collection(db, "recipes").withConverter(
   recipesConverter
 );
 
+const updateRecipeImage = async (
+  recipeReference: DocumentReference<Recipe, Recipe>,
+  image: string
+) => {
+  const imageReference = ref(storage, `images/${recipeReference.id}`);
+  const imageBlob = await uriToBlob(image);
+  const result = await uploadBytes(imageReference, imageBlob);
+  const newImage = await getDownloadURL(result.ref);
+
+  await updateDoc(recipeReference, { image: newImage });
+};
+
 const createRecipe = async (recipe: Recipe): Promise<void> => {
-  await addDoc(recipesCollection, recipe);
+  const recipeDocument = await addDoc(recipesCollection, recipe);
+
+  if (recipe.image != null) {
+    await updateRecipeImage(recipeDocument, recipe.image);
+  }
 };
 
 const findRecipes = async (): Promise<Recipe[]> => {
@@ -76,7 +95,12 @@ const updateRecipe = async (
   recipe: Partial<Recipe>
 ): Promise<Recipe> => {
   const recipeSnap = await findRecipeDocumentSnapById(id);
+
   await updateDoc(recipeSnap.ref, recipe);
+
+  if (recipe.image !== undefined && recipe.image !== null) {
+    await updateRecipeImage(recipeSnap.ref, recipe.image);
+  }
 
   return recipeSnap.data();
 };
