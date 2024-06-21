@@ -1,9 +1,15 @@
-import { CategoryResponse, categoriesApi } from "@/app/api/categoriesApi";
+import { categoriesApi } from "@/app/api/categoriesApi";
+import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
+import { AppText } from "@/app/components/AppText";
 import { RecipeForm, RecipeFormValueType } from "@/app/components/RecipeForm";
+import { Colors } from "@/app/config/Colors";
+import { useAsync } from "@/app/hooks/useAsync";
 import { StackParamList } from "@/app/types/navigation";
+import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
@@ -14,29 +20,54 @@ export type UploadRecipeScreenProps = NativeStackScreenProps<
 export const NewRecipe = (props: UploadRecipeScreenProps) => {
   const { navigation, route } = props;
 
-  const [categories, setCategories] = useState<CategoryResponse | undefined>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { create: createRecipe } = RecipeViewModel();
 
-  useEffect(() => {
-    setIsLoading(true);
-    categoriesApi
-      .getAllCategories()
-      .then(setCategories)
-      .finally(() => setIsLoading(false));
-  }, []);
+  const {
+    loading,
+    error,
+    response: categoryResponse,
+  } = useAsync({ action: categoriesApi.getAllCategories });
+
+  const [uploading, setUploading] = useState<boolean>(false);
 
   const uploadRecipe = async (recipe: RecipeFormValueType) => {
-    console.log(recipe);
+    setUploading(true);
+    try {
+      // TODO: Add the correct author ID
+      await createRecipe({ ...recipe, author: "abcde" });
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "The recipe has been created!",
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Oh no!",
+        text2: "There was a problem creating the recipe, please try again.",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
-  if (categories)
+  if (categoryResponse != null)
     return (
-      <View style={styles.page}>
+      <AppLoadingOverlay
+        loading={uploading}
+        style={styles.page}
+        renderLoading={
+          <View style={styles.loadingOverlay}>
+            <AppText style={styles.loadingOverlayText}>Uploading...</AppText>
+            <ActivityIndicator color={Colors.tint} size="large" />
+          </View>
+        }
+      >
         <RecipeForm
-          style={{ flex: 1 }}
-          categories={categories}
+          style={styles.recipeForm}
+          categoryResponse={categoryResponse}
           onRecipeFormSubmit={uploadRecipe}
         />
-      </View>
+      </AppLoadingOverlay>
     );
 };

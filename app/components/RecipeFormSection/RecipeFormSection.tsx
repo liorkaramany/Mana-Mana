@@ -3,7 +3,7 @@ import { StyleProp, TextStyle, View, ViewStyle } from "react-native";
 import { AppText } from "../AppText";
 import { styles } from "./styles";
 
-export type NewRecipeSectionProps = {
+export type RecipeFormSectionProps = {
   title: string;
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -11,7 +11,7 @@ export type NewRecipeSectionProps = {
   contentStyle?: StyleProp<ViewStyle>;
 };
 
-export const NewRecipeSection = (props: NewRecipeSectionProps) => {
+export const RecipeFormSection = (props: RecipeFormSectionProps) => {
   const { title, children, style, titleStyle, contentStyle } = props;
 
   return (

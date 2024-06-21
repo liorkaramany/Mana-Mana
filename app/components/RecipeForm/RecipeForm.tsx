@@ -1,11 +1,11 @@
-import { CategoryResponse, categoriesApi } from "@/app/api/categoriesApi";
+import { CategoryResponse } from "@/app/api/categoriesApi";
 import { AppButton } from "@/app/components/AppButton";
 import { AppImagePicker } from "@/app/components/AppImagePicker";
 import { AppMultiSelect } from "@/app/components/AppMultiSelect";
 import { AppTextInput } from "@/app/components/AppTextInput";
 import { EditableIngredients } from "@/app/components/EditableIngredients";
 import { EditableInstructions } from "@/app/components/EditableInstructions";
-import { NewRecipeSection } from "@/app/components/NewRecipeSection";
+import { RecipeFormSection } from "@/app/components/RecipeFormSection";
 import { DEFAULT_RECIPE_FORM } from "@/app/consts";
 import { Recipe } from "@/app/models/recipe";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { styles } from "./styles";
 export type RecipeFormValueType = Omit<Recipe, "author">;
 
 export type RecipeFormProps = {
-  categories: CategoryResponse;
+  categoryResponse: CategoryResponse;
   recipe?: RecipeFormValueType;
   onRecipeFormSubmit?: (recipe: RecipeFormValueType) => void;
   recipeFormSubmitText?: string;
@@ -24,7 +24,7 @@ export type RecipeFormProps = {
 
 export const RecipeForm = (props: RecipeFormProps) => {
   const {
-    categories,
+    categoryResponse,
     recipe,
     onRecipeFormSubmit,
     recipeFormSubmitText = "Upload",
@@ -39,6 +39,17 @@ export const RecipeForm = (props: RecipeFormProps) => {
       setInnerRecipe(recipe);
     }
   }, [recipe]);
+
+  const isTitleEmpty = innerRecipe.title.length === 0;
+  const noTags = innerRecipe.tags.length === 0;
+  const emptyInstructionsExist = innerRecipe.instructions.some(
+    (instruction) => instruction.length === 0
+  );
+  const emptyIngredientsExist = innerRecipe.ingredients.some(
+    (ingredient) => ingredient.name.length === 0 || ingredient.amount === 0
+  );
+  const disabledSubmitButton =
+    isTitleEmpty || noTags || emptyInstructionsExist || emptyIngredientsExist;
 
   const getInnerRecipePropertySetter = <T extends keyof RecipeFormValueType>(
     property: T
@@ -61,28 +72,29 @@ export const RecipeForm = (props: RecipeFormProps) => {
           imageUri={innerRecipe.image}
           onChangeImageUri={getInnerRecipePropertySetter("image")}
         />
-        <NewRecipeSection title="Tags">
+        <RecipeFormSection title="Tags">
           <AppMultiSelect
-            items={categories.categories}
-            uniqueKey="idCategory"
+            items={categoryResponse.categories}
+            uniqueKey="strCategory"
             displayKey="strCategory"
             selectedItems={innerRecipe.tags}
             onSelectedItemsChange={getInnerRecipePropertySetter("tags")}
           />
-        </NewRecipeSection>
-        <NewRecipeSection title="Ingredients">
+        </RecipeFormSection>
+        <RecipeFormSection title="Ingredients">
           <EditableIngredients
             ingredients={innerRecipe.ingredients}
             onIngredientsChange={getInnerRecipePropertySetter("ingredients")}
           />
-        </NewRecipeSection>
-        <NewRecipeSection title="Instructions">
+        </RecipeFormSection>
+        <RecipeFormSection title="Instructions">
           <EditableInstructions
             instructions={innerRecipe.instructions}
             onInstructionsChange={getInnerRecipePropertySetter("instructions")}
           />
-        </NewRecipeSection>
+        </RecipeFormSection>
         <AppButton
+          disabled={disabledSubmitButton}
           title={recipeFormSubmitText}
           onPress={() => onRecipeFormSubmit?.(innerRecipe)}
           size="lg"
