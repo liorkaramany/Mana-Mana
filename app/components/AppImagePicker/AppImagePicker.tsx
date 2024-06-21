@@ -1,7 +1,7 @@
 import { Radius } from "@/app/config/Radius";
 import Feather from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   ImageResizeMode,
@@ -17,6 +17,7 @@ export type AppImagePickerProps = {
   imageUri?: string;
   onChangeImageUri?: (imageUri: string | undefined) => void;
   resizeMode?: ImageResizeMode;
+  disabled?: boolean;
   radius?: keyof typeof Radius;
   style?: StyleProp<ViewStyle>;
   removeButtonStyle?: StyleProp<ViewStyle>;
@@ -33,6 +34,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
     imageUri,
     onChangeImageUri,
     resizeMode = "cover",
+    disabled = false,
     radius = "md",
     style,
     removeButtonStyle,
@@ -63,6 +65,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
     <View style={[stylesWithParameters.container, style]}>
       {!permissionGranted ? (
         <AppButton
+          disabled={disabled}
           onPress={() => requestAndGrantPermission()}
           variant="neutral"
           radius="no"
@@ -82,6 +85,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
         />
       ) : (
         <AppButton
+          disabled={disabled}
           onPress={selectImage}
           variant="neutral"
           radius="no"
@@ -109,6 +113,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
       )}
       {permissionGranted && finalImageUri != null && (
         <AppButton
+          disabled={disabled}
           radius="xl"
           variant="neutral"
           style={[stylesWithParameters.removeImageButton, removeButtonStyle]}
