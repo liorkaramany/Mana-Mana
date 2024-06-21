@@ -1,11 +1,11 @@
-import { CategoryResponse, categoriesApi } from "@/app/api/categoriesApi";
+import { CategoryResponse } from "@/app/api/categoriesApi";
 import { AppButton } from "@/app/components/AppButton";
 import { AppImagePicker } from "@/app/components/AppImagePicker";
 import { AppMultiSelect } from "@/app/components/AppMultiSelect";
 import { AppTextInput } from "@/app/components/AppTextInput";
 import { EditableIngredients } from "@/app/components/EditableIngredients";
 import { EditableInstructions } from "@/app/components/EditableInstructions";
-import { NewRecipeSection } from "@/app/components/NewRecipeSection";
+import { RecipeFormSection } from "@/app/components/RecipeFormSection";
 import { DEFAULT_RECIPE_FORM } from "@/app/consts";
 import { Recipe } from "@/app/models/recipe";
 import { useEffect, useState } from "react";
@@ -61,7 +61,7 @@ export const RecipeForm = (props: RecipeFormProps) => {
           imageUri={innerRecipe.image}
           onChangeImageUri={getInnerRecipePropertySetter("image")}
         />
-        <NewRecipeSection title="Tags">
+        <RecipeFormSection title="Tags">
           <AppMultiSelect
             items={categories.categories}
             uniqueKey="idCategory"
@@ -69,19 +69,19 @@ export const RecipeForm = (props: RecipeFormProps) => {
             selectedItems={innerRecipe.tags}
             onSelectedItemsChange={getInnerRecipePropertySetter("tags")}
           />
-        </NewRecipeSection>
-        <NewRecipeSection title="Ingredients">
+        </RecipeFormSection>
+        <RecipeFormSection title="Ingredients">
           <EditableIngredients
             ingredients={innerRecipe.ingredients}
             onIngredientsChange={getInnerRecipePropertySetter("ingredients")}
           />
-        </NewRecipeSection>
-        <NewRecipeSection title="Instructions">
+        </RecipeFormSection>
+        <RecipeFormSection title="Instructions">
           <EditableInstructions
             instructions={innerRecipe.instructions}
             onInstructionsChange={getInnerRecipePropertySetter("instructions")}
           />
-        </NewRecipeSection>
+        </RecipeFormSection>
         <AppButton
           title={recipeFormSubmitText}
           onPress={() => onRecipeFormSubmit?.(innerRecipe)}
