@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { styles } from "./styles";
+import { useAsync } from "@/app/hooks/useAsync";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -14,27 +15,22 @@ export type UploadRecipeScreenProps = NativeStackScreenProps<
 export const NewRecipe = (props: UploadRecipeScreenProps) => {
   const { navigation, route } = props;
 
-  const [categories, setCategories] = useState<CategoryResponse | undefined>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    setIsLoading(true);
-    categoriesApi
-      .getAllCategories()
-      .then(setCategories)
-      .finally(() => setIsLoading(false));
-  }, []);
+  const {
+    loading,
+    error,
+    response: categoryResponse,
+  } = useAsync({ action: categoriesApi.getAllCategories });
 
   const uploadRecipe = async (recipe: RecipeFormValueType) => {
     console.log(recipe);
   };
 
-  if (categories)
+  if (categoryResponse != null)
     return (
       <View style={styles.page}>
         <RecipeForm
           style={{ flex: 1 }}
-          categories={categories}
+          categoryResponse={categoryResponse}
           onRecipeFormSubmit={uploadRecipe}
         />
       </View>

@@ -15,7 +15,7 @@ import { styles } from "./styles";
 export type RecipeFormValueType = Omit<Recipe, "author">;
 
 export type RecipeFormProps = {
-  categories: CategoryResponse;
+  categoryResponse: CategoryResponse;
   recipe?: RecipeFormValueType;
   onRecipeFormSubmit?: (recipe: RecipeFormValueType) => void;
   recipeFormSubmitText?: string;
@@ -24,7 +24,7 @@ export type RecipeFormProps = {
 
 export const RecipeForm = (props: RecipeFormProps) => {
   const {
-    categories,
+    categoryResponse,
     recipe,
     onRecipeFormSubmit,
     recipeFormSubmitText = "Upload",
@@ -63,7 +63,7 @@ export const RecipeForm = (props: RecipeFormProps) => {
         />
         <RecipeFormSection title="Tags">
           <AppMultiSelect
-            items={categories.categories}
+            items={categoryResponse.categories}
             uniqueKey="idCategory"
             displayKey="strCategory"
             selectedItems={innerRecipe.tags}
