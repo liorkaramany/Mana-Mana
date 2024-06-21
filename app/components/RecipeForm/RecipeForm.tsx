@@ -40,6 +40,17 @@ export const RecipeForm = (props: RecipeFormProps) => {
     }
   }, [recipe]);
 
+  const isTitleEmpty = innerRecipe.title.length === 0;
+  const noTags = innerRecipe.tags.length === 0;
+  const emptyInstructionsExist = innerRecipe.instructions.some(
+    (instruction) => instruction.length === 0
+  );
+  const emptyIngredientsExist = innerRecipe.ingredients.some(
+    (ingredient) => ingredient.name.length === 0 || ingredient.amount === 0
+  );
+  const disabledSubmitButton =
+    isTitleEmpty || noTags || emptyInstructionsExist || emptyIngredientsExist;
+
   const getInnerRecipePropertySetter = <T extends keyof RecipeFormValueType>(
     property: T
   ) => {
@@ -64,7 +75,7 @@ export const RecipeForm = (props: RecipeFormProps) => {
         <RecipeFormSection title="Tags">
           <AppMultiSelect
             items={categoryResponse.categories}
-            uniqueKey="idCategory"
+            uniqueKey="strCategory"
             displayKey="strCategory"
             selectedItems={innerRecipe.tags}
             onSelectedItemsChange={getInnerRecipePropertySetter("tags")}
@@ -83,6 +94,7 @@ export const RecipeForm = (props: RecipeFormProps) => {
           />
         </RecipeFormSection>
         <AppButton
+          disabled={disabledSubmitButton}
           title={recipeFormSubmitText}
           onPress={() => onRecipeFormSubmit?.(innerRecipe)}
           size="lg"

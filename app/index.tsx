@@ -9,6 +9,7 @@ import { NewRecipe } from "./screens/NewRecipe";
 import { StackParamList } from "./types/navigation";
 import { Colors } from "./config/Colors";
 import "./firebase";
+import Toast from "react-native-toast-message";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,16 +32,19 @@ export default function App() {
   }
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        title: "Mana Mana",
-        contentStyle: { backgroundColor: Colors.background },
-      }}
-      initialRouteName="Home"
-    >
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="NewRecipe" component={NewRecipe} />
-    </Stack.Navigator>
+    <>
+      <Stack.Navigator
+        screenOptions={{
+          title: "Mana Mana",
+          contentStyle: { backgroundColor: Colors.background },
+        }}
+        initialRouteName="Home"
+      >
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="NewRecipe" component={NewRecipe} />
+      </Stack.Navigator>
+      <Toast />
+    </>
   );
 }

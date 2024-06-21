@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { styles } from "./styles";
 import { useAsync } from "@/app/hooks/useAsync";
+import { RecipeViewModel } from "@/app/viewmodels/recipe";
+import Toast from "react-native-toast-message";
 
 export type UploadRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -15,6 +17,8 @@ export type UploadRecipeScreenProps = NativeStackScreenProps<
 export const NewRecipe = (props: UploadRecipeScreenProps) => {
   const { navigation, route } = props;
 
+  const { create: createRecipe } = RecipeViewModel();
+
   const {
     loading,
     error,
@@ -22,7 +26,13 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
   } = useAsync({ action: categoriesApi.getAllCategories });
 
   const uploadRecipe = async (recipe: RecipeFormValueType) => {
-    console.log(recipe);
+    // TODO: Add the correct author ID
+    await createRecipe({ ...recipe, author: "abcde" });
+    Toast.show({
+      type: "success",
+      text1: "Success!",
+      text2: "The recipe has been created!",
+    });
   };
 
   if (categoryResponse != null)
