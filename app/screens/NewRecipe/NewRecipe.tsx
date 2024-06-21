@@ -12,12 +12,12 @@ import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 
-export type UploadRecipeScreenProps = NativeStackScreenProps<
+export type NewRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
   "NewRecipe"
 >;
 
-export const NewRecipe = (props: UploadRecipeScreenProps) => {
+export const NewRecipe = (props: NewRecipeScreenProps) => {
   const { navigation, route } = props;
 
   const { create: createRecipe } = RecipeViewModel();
@@ -32,6 +32,7 @@ export const NewRecipe = (props: UploadRecipeScreenProps) => {
 
   const uploadRecipe = async (recipe: RecipeFormValueType) => {
     setUploading(true);
+
     try {
       // TODO: Add the correct author ID
       await createRecipe({ ...recipe, author: "abcde" });
