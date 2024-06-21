@@ -23,12 +23,6 @@ export type AppImagePickerProps = {
   removeButtonStyle?: StyleProp<ViewStyle>;
 };
 
-const requestPermission = async () => {
-  const response = await ImagePicker.requestCameraPermissionsAsync();
-
-  return response.granted;
-};
-
 export const AppImagePicker = (props: AppImagePickerProps) => {
   const {
     imageUri,
@@ -40,18 +34,14 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
     removeButtonStyle,
   } = props;
 
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
+
   const [innerImageUri, setInnerImageUri] = useState<string | undefined>();
-  const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
 
   const finalImageUri = imageUri ?? innerImageUri;
   const finalOnChangeImageUri = onChangeImageUri ?? setInnerImageUri;
 
   const stylesWithParameters = styles({ radius });
-
-  const requestAndGrantPermission = async () => {
-    const granted = await requestPermission();
-    setPermissionGranted(granted);
-  };
 
   const selectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();
@@ -63,10 +53,10 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
 
   return (
     <View style={[stylesWithParameters.container, style]}>
-      {!permissionGranted ? (
+      {!status?.granted ? (
         <AppButton
           disabled={disabled}
-          onPress={() => requestAndGrantPermission()}
+          onPress={requestPermission}
           variant="neutral"
           radius="no"
           title={
@@ -111,7 +101,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
           style={stylesWithParameters.uploadImageButton}
         />
       )}
-      {permissionGranted && finalImageUri != null && (
+      {status?.granted && finalImageUri != null && (
         <AppButton
           disabled={disabled}
           radius="xl"
