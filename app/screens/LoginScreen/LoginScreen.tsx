@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import styles from "./styles";
-import { AppTextInput } from "@/app/components/AppTextInput";
 import { AppButton } from "@/app/components/AppButton";
 import { AppText } from "@/app/components/AppText";
+import { AppTextInput } from "@/app/components/AppTextInput";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { auth } from "../../firebase/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { auth } from "../../firebase/firebase";
+import styles from "./styles";
 
 type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
