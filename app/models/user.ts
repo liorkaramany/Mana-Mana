@@ -28,7 +28,7 @@ const signUpUser = async (
   email: string,
   password: string,
   userDetails: UserDetailsWithoutEmail
-): Promise<void> => {
+) => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -39,10 +39,12 @@ const signUpUser = async (
     ...userDetails,
     email,
   } satisfies UserDetails);
+
+  return userCredential;
 };
 
 const signInUser = async (email: string, password: string) => {
-  await signInWithEmailAndPassword(auth, email, password);
+  return await signInWithEmailAndPassword(auth, email, password);
 };
 
 const findUserSnapById = async (id: string) => {
