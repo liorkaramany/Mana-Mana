@@ -18,7 +18,6 @@ export type RecipeIngredient = {
 };
 
 export type RecipeRating = {
-  recipeId: string;
   userId: string;
   rating: number;
 };
