@@ -35,13 +35,13 @@ export type Recipe = {
 
 export type RecipeWithRating = Recipe & { rating: number | null };
 
-export class RecipeNotFound extends Error {
+export class RecipeNotFoundError extends Error {
   constructor(id: string) {
     super(`Recipe with id: [ ${id} ] was not found.`);
   }
 }
 
-export class RecipeRatingNotFound extends Error {
+export class RecipeRatingNotFoundError extends Error {
   constructor(recipeId: string, userId: string) {
     super(
       `Recipe Rating with recipeId: [ ${recipeId} ] of userId: [ ${userId} ] was not found.`
@@ -94,7 +94,7 @@ const findRecipeDocumentSnapById = async (id: string) => {
   const recipeSnap = await getDoc(documentReference);
 
   if (!recipeSnap.exists()) {
-    throw new RecipeNotFound(id);
+    throw new RecipeNotFoundError(id);
   }
 
   return recipeSnap;
@@ -151,7 +151,7 @@ const findRecipeRatingSnap = async (recipeId: string, userId: string) => {
   const recipeDocumentSnap = await getDoc(recipeRatingDocument);
 
   if (!recipeDocumentSnap.exists()) {
-    throw new RecipeRatingNotFound(recipeId, userId);
+    throw new RecipeRatingNotFoundError(recipeId, userId);
   }
 
   return recipeDocumentSnap;
