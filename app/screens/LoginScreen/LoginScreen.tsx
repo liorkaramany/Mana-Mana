@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import styles from "./styles";
 import { AppTextInput } from '@/app/components/AppTextInput';
 import { AppButton } from '@/app/components/AppButton';
@@ -9,19 +10,20 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { auth } from '../../firebase/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-export type NewRecipeScreenProps = NativeStackScreenProps<StackParamList, "Login">;
+type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
-export const LoginScreen = () => {
+export const LoginScreen = (props: LoginScreenProps) => {
+  const { navigation } = props;
   const [showLogin, setShowLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        // User is logged in, navigate to a different screen
-        console.log('User logged in:', user);
+        // User is logged in, navigate to home screen
+        navigation.navigate('Home'); // Replace 'Home' with your actual screen name
       }
     });
 
@@ -37,7 +39,8 @@ export const LoginScreen = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setError(null); // Clear any previous errors
       console.log('User logged in:', userCredential.user);
-      // Implement logic to navigate after successful login
+      // Navigate to home screen
+      navigation.navigate('Home'); // Replace 'Home' with your actual screen name
     } catch (error) {
       setError(error.message);
       console.error('Login error:', error);
@@ -49,7 +52,8 @@ export const LoginScreen = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       setError(null); // Clear any previous errors
       console.log('User signed up:', userCredential.user);
-      // Implement logic to navigate after successful signup
+      // Navigate to home screen
+      navigation.navigate('Home'); // Replace 'Home' with your actual screen name
     } catch (error) {
       setError(error.message);
       console.error('Signup error:', error);

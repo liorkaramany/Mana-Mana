@@ -39,10 +39,10 @@ export default function App() {
           title: "Mana Mana",
           contentStyle: { backgroundColor: Colors.background },
         }}
-        initialRouteName="Home"
+        initialRouteName="Login"
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="NewRecipe" component={NewRecipe} />
         <Stack.Screen name="EditRecipe" component={EditRecipe} />
       </Stack.Navigator>

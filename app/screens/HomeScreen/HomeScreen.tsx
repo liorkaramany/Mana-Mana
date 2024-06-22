@@ -12,7 +12,6 @@ export const HomeScreen = (props: HomeScreenProps) => {
   return (
     <View>
       <AppText>Home Screen</AppText>
-      <AppButton title="Login" onPress={() => navigation.navigate("Login")} />
       <AppButton
         title="Upload Recipe"
         onPress={() => navigation.navigate("NewRecipe")}
