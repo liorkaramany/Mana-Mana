@@ -3,6 +3,7 @@ import { db } from "../firebase";
 import { converter } from "../firebase/utilities";
 
 export type User = {
+  email: string;
   name: string;
   image: string | null;
 };
