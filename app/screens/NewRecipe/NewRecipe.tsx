@@ -11,6 +11,7 @@ import { useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
+import { UserViewModel } from "@/app/viewmodels/user";
 
 export type NewRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -21,6 +22,7 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
   const { navigation, route } = props;
 
   const { create: createRecipe } = RecipeViewModel();
+  const { currentUser } = UserViewModel();
 
   const {
     loading,
@@ -31,24 +33,32 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
   const [uploading, setUploading] = useState<boolean>(false);
 
   const uploadRecipe = async (recipe: RecipeFormValueType) => {
-    setUploading(true);
-
-    try {
-      // TODO: Add the correct author ID
-      await createRecipe({ ...recipe, author: "abcde" });
-      Toast.show({
-        type: "success",
-        text1: "Success!",
-        text2: "The recipe has been created!",
-      });
-    } catch (error) {
+    if (currentUser == null) {
       Toast.show({
         type: "error",
         text1: "Oh no!",
-        text2: "There was a problem creating the recipe, please try again.",
+        text2:
+          "There was a problem reading your details, try signing in again.",
       });
-    } finally {
-      setUploading(false);
+    } else {
+      setUploading(true);
+
+      try {
+        await createRecipe({ ...recipe, author: currentUser.uid });
+        Toast.show({
+          type: "success",
+          text1: "Success!",
+          text2: "The recipe has been created!",
+        });
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Oh no!",
+          text2: "There was a problem creating the recipe, please try again.",
+        });
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
