@@ -1,5 +1,9 @@
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import { converter } from "../firebase/utilities";
 
 export type User = {
@@ -7,6 +11,8 @@ export type User = {
   name: string;
   image: string | null;
 };
+
+export type UserWithoutEmail = Omit<User, "email">;
 
 export class UserNotFoundError extends Error {
   constructor(id: string) {
@@ -18,8 +24,25 @@ const usersConverter = converter<User>();
 
 const usersCollection = collection(db, "users").withConverter(usersConverter);
 
-const createUser = async (id: string, user: User): Promise<void> => {
-  await setDoc(doc(usersCollection, id), user);
+const signUpUser = async (
+  email: string,
+  password: string,
+  user: UserWithoutEmail
+): Promise<void> => {
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+
+  await setDoc(doc(usersCollection, userCredential.user.uid), {
+    ...user,
+    email,
+  } satisfies User);
+};
+
+const signInUser = async (email: string, password: string) => {
+  await signInWithEmailAndPassword(auth, email, password);
 };
 
 const findUserSnapById = async (id: string) => {
@@ -44,4 +67,4 @@ const updateUser = async (id: string, user: Partial<User>): Promise<void> => {
   await updateDoc(userSnap.ref, user);
 };
 
-export { createUser, findUserById, updateUser };
+export { findUserById, signInUser, signUpUser, updateUser };
