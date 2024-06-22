@@ -127,6 +127,7 @@ const rateRecipe = async (
   recipeRating: RecipeRating
 ) => {
   const recipeSnap = await findRecipeDocumentSnapById(recipeId);
+  await findUserDetailsById(userId);
 
   await setDoc(doc(recipeSnap.ref, "ratings", userId), recipeRating);
 };
