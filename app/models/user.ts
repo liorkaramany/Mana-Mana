@@ -6,13 +6,13 @@ import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { converter } from "../firebase/utilities";
 
-export type User = {
+export type UserDetails = {
   email: string;
   name: string;
   image: string | null;
 };
 
-export type UserWithoutEmail = Omit<User, "email">;
+export type UserDetailsWithoutEmail = Omit<UserDetails, "email">;
 
 export class UserNotFoundError extends Error {
   constructor(id: string) {
@@ -20,14 +20,14 @@ export class UserNotFoundError extends Error {
   }
 }
 
-const usersConverter = converter<User>();
+const usersConverter = converter<UserDetails>();
 
 const usersCollection = collection(db, "users").withConverter(usersConverter);
 
 const signUpUser = async (
   email: string,
   password: string,
-  user: UserWithoutEmail
+  userDetails: UserDetailsWithoutEmail
 ): Promise<void> => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
@@ -36,9 +36,9 @@ const signUpUser = async (
   );
 
   await setDoc(doc(usersCollection, userCredential.user.uid), {
-    ...user,
+    ...userDetails,
     email,
-  } satisfies User);
+  } satisfies UserDetails);
 };
 
 const signInUser = async (email: string, password: string) => {
@@ -57,14 +57,17 @@ const findUserSnapById = async (id: string) => {
   return userSnap;
 };
 
-const findUserById = async (id: string): Promise<User> => {
+const findUserDetailsById = async (id: string): Promise<UserDetails> => {
   return (await findUserSnapById(id)).data();
 };
 
-const updateUser = async (id: string, user: Partial<User>): Promise<void> => {
+const updateUser = async (
+  id: string,
+  userDetails: Partial<UserDetails>
+): Promise<void> => {
   const userSnap = await findUserSnapById(id);
 
-  await updateDoc(userSnap.ref, user);
+  await updateDoc(userSnap.ref, userDetails);
 };
 
-export { findUserById, signInUser, signUpUser, updateUser };
+export { findUserDetailsById, signInUser, signUpUser, updateUser };
