@@ -1,15 +1,18 @@
 import {
   DocumentReference,
-  QueryDocumentSnapshot,
   addDoc,
+  average,
   collection,
   doc,
+  getAggregateFromServer,
   getDoc,
   getDocs,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
+import { converter } from "../firebase/utilities";
 import { uriToBlob } from "../utilities";
 
 export type RecipeIngredient = {
@@ -18,8 +21,6 @@ export type RecipeIngredient = {
 };
 
 export type RecipeRating = {
-  recipeId: string;
-  userId: string;
   rating: number;
 };
 
@@ -32,16 +33,24 @@ export type Recipe = {
   instructions: string[];
 };
 
+export type RecipeWithRating = Recipe & { rating: number | null };
+
 export class RecipeNotFound extends Error {
   constructor(id: string) {
     super(`Recipe with id: [ ${id} ] was not found.`);
   }
 }
 
-const recipesConverter = {
-  toFirestore: (data: Recipe) => data,
-  fromFirestore: (snap: QueryDocumentSnapshot) => snap.data() as Recipe,
-};
+export class RecipeRatingNotFound extends Error {
+  constructor(recipeId: string, userId: string) {
+    super(
+      `Recipe Rating with recipeId: [ ${recipeId} ] of userId: [ ${userId} ] was not found.`
+    );
+  }
+}
+
+const recipesConverter = converter<Recipe>();
+const recipeRatingsConverter = converter<RecipeRating>();
 
 const recipesCollection = collection(db, "recipes").withConverter(
   recipesConverter
@@ -67,10 +76,15 @@ const createRecipe = async (recipe: Recipe): Promise<void> => {
   }
 };
 
-const findRecipes = async (): Promise<Recipe[]> => {
+const findRecipes = async (): Promise<RecipeWithRating[]> => {
   const querySnapshot = await getDocs(recipesCollection);
 
-  return querySnapshot.docs.map((document) => document.data());
+  return await Promise.all(
+    querySnapshot.docs.map(async (document) => ({
+      ...document.data(),
+      rating: await averageRecipeRating(document.id),
+    }))
+  );
 };
 
 const findRecipeDocumentSnapById = async (id: string) => {
@@ -105,4 +119,70 @@ const updateRecipe = async (
   return recipeSnap.data();
 };
 
-export { createRecipe, findRecipeById, findRecipes, updateRecipe };
+const rateRecipe = async (
+  recipeId: string,
+  userId: string,
+  recipeRating: RecipeRating
+) => {
+  const recipeSnap = await findRecipeDocumentSnapById(recipeId);
+
+  await setDoc(doc(recipeSnap.ref, "ratings", userId), recipeRating);
+};
+
+const averageRecipeRating = async (recipeId: string) => {
+  const recipeSnap = await findRecipeDocumentSnapById(recipeId);
+
+  const snapshot = await getAggregateFromServer(
+    collection(recipeSnap.ref, "ratings"),
+    { averageRating: average("rating") }
+  );
+
+  return snapshot.data().averageRating;
+};
+
+const findRecipeRatingSnap = async (recipeId: string, userId: string) => {
+  const recipeSnap = await findRecipeDocumentSnapById(recipeId);
+
+  const recipeRatingDocument = doc(
+    collection(recipeSnap.ref, "ratings").withConverter(recipeRatingsConverter),
+    userId
+  );
+
+  const recipeDocumentSnap = await getDoc(recipeRatingDocument);
+
+  if (!recipeDocumentSnap.exists()) {
+    throw new RecipeRatingNotFound(recipeId, userId);
+  }
+
+  return recipeDocumentSnap;
+};
+
+const findRecipeRating = async (
+  recipeId: string,
+  userId: string
+): Promise<RecipeRating> => {
+  return (await findRecipeRatingSnap(recipeId, userId)).data();
+};
+
+const updateRecipeRating = async (
+  recipeId: string,
+  userId: string,
+  recipeRating: Partial<RecipeRating>
+): Promise<RecipeRating> => {
+  const recipeRatingSnap = await findRecipeRatingSnap(recipeId, userId);
+
+  await updateDoc(recipeRatingSnap.ref, recipeRating);
+
+  return recipeRatingSnap.data();
+};
+
+export {
+  averageRecipeRating,
+  createRecipe,
+  findRecipeById,
+  findRecipeRating,
+  findRecipes,
+  rateRecipe,
+  updateRecipe,
+  updateRecipeRating,
+};
