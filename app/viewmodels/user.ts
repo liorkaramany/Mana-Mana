@@ -11,7 +11,7 @@ import {
 } from "../models/user";
 
 export const UserViewModel = () => {
-  const [currentuser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentUserDetais, setCurrentUserDetails] =
     useState<UserDetails | null>(null);
 
@@ -49,5 +49,12 @@ export const UserViewModel = () => {
   const update = async (id: string, userDetails: Partial<UserDetails>) =>
     await updateUser(id, userDetails);
 
-  return { signUp, signIn, findDetailsById, update };
+  return {
+    currentUser,
+    currentUserDetais,
+    signUp,
+    signIn,
+    findDetailsById,
+    update,
+  };
 };
