@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { AppButton } from "@/app/components/AppButton";
+import { AppText } from "@/app/components/AppText";
+import { AppTextInput } from "@/app/components/AppTextInput";
+import { UserDetailsWithoutEmail } from "@/app/models/user";
+import { StackParamList } from "@/app/types/navigation";
+import { UserViewModel } from "@/app/viewmodels/user";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import React, { useEffect, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { auth } from "../../firebase/firebase";
 import styles from "./styles";
-import { AppTextInput } from '@/app/components/AppTextInput';
-import { AppButton } from '@/app/components/AppButton';
-import { AppText } from '@/app/components/AppText';
-import { StackParamList } from '@/app/types/navigation';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { auth, db } from '../../firebase/firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { Firestore, collection, doc, setDoc } from 'firebase/firestore';
-import { User, createUser } from '@/app/models/user';
 
 type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
 export const LoginScreen = (props: LoginScreenProps) => {
   const { navigation } = props;
   const [showLogin, setShowLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const { signIn, signUp } = UserViewModel();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         // User is logged in, navigate to home screen
-        navigation.navigate('Home');
+        navigation.navigate("Home");
       }
     });
 
@@ -38,42 +38,37 @@ export const LoginScreen = (props: LoginScreenProps) => {
 
   const handleLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signIn(email, password);
       setError(null); // Clear any previous errors
-
-      console.log('User logged in successfully!');
+      console.log("User logged in:", userCredential.user);
+        
       // Navigate to home screen
-      navigation.navigate('Home');
+      navigation.navigate("Home");
     } catch (error) {
       setError(error.message);
-      console.error('Login error:', error);
+      console.error("Login error:", error);
     }
   };
-  
+
   const handleSignup = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await signUp(
+        email,
+        password,
+        // TODO: Fill in the details
+        {} as UserDetailsWithoutEmail
+      );
       setError(null); // Clear any previous errors
-      const user = userCredential.user; // Get the newly created user object
-      
-      const userData = {
-        name: userCredential.user.email,
-        uid: userCredential.user.uid,
-        image: null,
-      };
+      console.log("User signed up:", userCredential.user);
 
-      createUser(userData);
-      console.log('User data added to Firestore:', userData);
-
-      console.log('User signed up:', userCredential.user);
       // Navigate to home screen
-      navigation.navigate('Home');
+      navigation.navigate("Home");
     } catch (error) {
       setError(error.message);
-      console.error('Signup error:', error);
+      console.error("Signup error:", error);
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -104,9 +99,15 @@ export const LoginScreen = (props: LoginScreenProps) => {
             />
             {error && <Text style={styles.errorText}>{error}</Text>}
             <TouchableOpacity style={styles.forgotPasswordButton}>
-              <AppText style={styles.forgotPasswordText}>Forgot password?</AppText>
+              <AppText style={styles.forgotPasswordText}>
+                Forgot password?
+              </AppText>
             </TouchableOpacity>
-            <AppButton title="Login" style={styles.loginButton} onPress={handleLogin} />
+            <AppButton
+              title="Login"
+              style={styles.loginButton}
+              onPress={handleLogin}
+            />
           </>
         ) : (
           <>
@@ -131,17 +132,23 @@ export const LoginScreen = (props: LoginScreenProps) => {
               secureTextEntry={true}
             />
             {error && <Text style={styles.errorText}>{error}</Text>}
-            <AppButton title="Sign Up" style={styles.signupButton} onPress={handleSignup} />
+            <AppButton
+              title="Sign Up"
+              style={styles.signupButton}
+              onPress={handleSignup}
+            />
           </>
         )}
       </View>
-      
+
       <View style={styles.switch}>
         <Text style={styles.switchText}>
-          {showLogin ? 'New here? ' : 'Already have an account? '}
+          {showLogin ? "New here? " : "Already have an account? "}
         </Text>
         <TouchableOpacity onPress={handlePress}>
-          <AppText style={styles.switchLink}>{showLogin ? 'Sign Up' : 'Sign In'}</AppText>
+          <AppText style={styles.switchLink}>
+            {showLogin ? "Sign Up" : "Sign In"}
+          </AppText>
         </TouchableOpacity>
       </View>
     </View>

@@ -1,9 +1,12 @@
 import { useAsync } from "../hooks/useAsync";
 import {
   Recipe,
+  RecipeRating,
   createRecipe,
   findRecipeById,
+  findRecipeRating as findRecipeRatingModel,
   findRecipes,
+  rateRecipe,
   updateRecipe,
 } from "../models/recipe";
 
@@ -22,7 +25,13 @@ export const RecipeViewModel = () => {
   const findById = async (id: string) => await findRecipeById(id);
 
   const update = async (id: string, recipe: Partial<Recipe>) =>
-    updateRecipe(id, recipe);
+    await updateRecipe(id, recipe);
+
+  const rate = async (id: string, userId: string, recipeRating: RecipeRating) =>
+    await rateRecipe(id, userId, recipeRating);
+
+  const findRecipeRating = async (id: string, userId: string) =>
+    await findRecipeRatingModel(id, userId);
 
   return {
     recipes,
@@ -32,5 +41,7 @@ export const RecipeViewModel = () => {
     create,
     findById,
     update,
+    rate,
+    findRecipeRating,
   };
 };
