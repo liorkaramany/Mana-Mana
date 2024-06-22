@@ -1,75 +1,60 @@
+import { User } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { auth } from "../firebase";
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
-import { converter } from "../firebase/utilities";
+  UserDetails,
+  UserDetailsWithoutEmail,
+  findUserDetailsById,
+  signInUser,
+  signUpUser,
+  updateUser,
+} from "../models/user";
 
-export type UserDetails = {
-  email: string;
-  name: string;
-  image: string | null;
+export const UserViewModel = () => {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUserDetais, setCurrentUserDetails] =
+    useState<UserDetails | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setCurrentUser(user);
+
+      if (user == null) {
+        setCurrentUserDetails(null);
+      } else {
+        try {
+          const userDetails = await findDetailsById(user.uid);
+          setCurrentUserDetails(userDetails);
+        } catch (error) {
+          setCurrentUserDetails(null);
+          console.log("UserViewModel:", error);
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const signUp = async (
+    email: string,
+    password: string,
+    userDetails: UserDetailsWithoutEmail
+  ) => await signUpUser(email, password, userDetails);
+
+  const signIn = async (email: string, password: string) =>
+    await signInUser(email, password);
+
+  const findDetailsById = async (id: string) => await findUserDetailsById(id);
+
+  const update = async (id: string, userDetails: Partial<UserDetails>) =>
+    await updateUser(id, userDetails);
+
+  return {
+    currentUser,
+    currentUserDetais,
+    signUp,
+    signIn,
+    findDetailsById,
+    update,
+  };
 };
-
-export type UserDetailsWithoutEmail = Omit<UserDetails, "email">;
-
-export class UserNotFoundError extends Error {
-  constructor(id: string) {
-    super(`User with id: [ ${id} ] was not found.`);
-  }
-}
-
-const usersConverter = converter<UserDetails>();
-
-const usersCollection = collection(db, "users").withConverter(usersConverter);
-
-const signUpUser = async (
-  email: string,
-  password: string,
-  userDetails: UserDetailsWithoutEmail
-) => {
-  const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-
-  await setDoc(doc(usersCollection, userCredential.user.uid), {
-    ...userDetails,
-    email,
-  } satisfies UserDetails);
-
-  return userCredential;
-};
-
-const signInUser = async (email: string, password: string) => {
-  return await signInWithEmailAndPassword(auth, email, password);
-};
-
-const findUserSnapById = async (id: string) => {
-  const documentReference = doc(usersCollection, id);
-
-  const userSnap = await getDoc(documentReference);
-
-  if (!userSnap.exists()) {
-    throw new UserNotFoundError(id);
-  }
-
-  return userSnap;
-};
-
-const findUserDetailsById = async (id: string): Promise<UserDetails> => {
-  return (await findUserSnapById(id)).data();
-};
-
-const updateUser = async (
-  id: string,
-  userDetails: Partial<UserDetails>
-): Promise<void> => {
-  const userSnap = await findUserSnapById(id);
-
-  await updateDoc(userSnap.ref, userDetails);
-};
-
-export { findUserDetailsById, signInUser, signUpUser, updateUser };

@@ -41,6 +41,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       const userCredential = await signIn(email, password);
       setError(null); // Clear any previous errors
       console.log("User logged in:", userCredential.user);
+        
       // Navigate to home screen
       navigation.navigate("Home");
     } catch (error) {
@@ -59,6 +60,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       );
       setError(null); // Clear any previous errors
       console.log("User signed up:", userCredential.user);
+
       // Navigate to home screen
       navigation.navigate("Home");
     } catch (error) {
