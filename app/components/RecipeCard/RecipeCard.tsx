@@ -1,20 +1,23 @@
 import { Recipe } from "@/app/models/recipe";
 import { User } from "@/app/models/user";
-import { Image, View } from "react-native";
-import { AppCard, AppCardProps } from "../AppCard";
-import { AppText } from "../AppText";
-import { styles } from "./styles";
-import { UserWithAvatar } from "../UserWithAvatar";
-import { AppButton } from "../AppButton";
 import Feather from "@expo/vector-icons/Feather";
+import { View } from "react-native";
+import { AppButton } from "../AppButton";
+import { AppCard, AppCardProps } from "../AppCard";
+import { AppRating } from "../AppRating";
+import { AppText } from "../AppText";
+import { UserWithAvatar } from "../UserWithAvatar";
+import { styles } from "./styles";
 
-export type RecipeWithAuthor = Omit<Recipe, "author"> & { author: User };
+export type RecipeWithAuthorAndRating = Omit<Recipe, "author"> & {
+  author: User;
+} & { rating: number };
 
 export type RecipeCardProps = Pick<
   AppCardProps,
   "radius" | "imageResizeMode" | "style" | "imageStyle" | "contentStyle"
 > & {
-  recipe: RecipeWithAuthor;
+  recipe: RecipeWithAuthorAndRating;
   onEdit?: () => void;
   onDelete?: () => void;
   withActions?: boolean;
@@ -60,6 +63,12 @@ export const RecipeCard = (props: RecipeCardProps) => {
         <AppText numberOfLines={4}>{ingredientsList}</AppText>
         <AppText>Instructions</AppText>
         <AppText numberOfLines={4}>{instructionsList}</AppText>
+        <AppRating
+          style={styles.rating}
+          startingValue={recipe.rating}
+          readonly
+          imageSize={32}
+        />
       </AppCard>
     </View>
   );
