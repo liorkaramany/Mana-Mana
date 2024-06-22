@@ -1,14 +1,16 @@
 import {
+  DocumentReference,
   QueryDocumentSnapshot,
   addDoc,
   collection,
+  doc,
   getDoc,
   getDocs,
   updateDoc,
-  doc,
 } from "firebase/firestore";
-import { db } from "../firebase";
-import { User } from "./user";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../firebase";
+import { uriToBlob } from "../utilities";
 
 export type RecipeIngredient = {
   name: string;
@@ -17,14 +19,14 @@ export type RecipeIngredient = {
 
 export type RecipeRating = {
   recipeId: string;
-  user: User;
+  userId: string;
   rating: number;
 };
 
 export type Recipe = {
-  author: User;
+  author: string;
   title: string;
-  image?: string;
+  image: string | null;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string[];
@@ -45,8 +47,24 @@ const recipesCollection = collection(db, "recipes").withConverter(
   recipesConverter
 );
 
+const updateRecipeImage = async (
+  recipeReference: DocumentReference<Recipe, Recipe>,
+  image: string
+) => {
+  const imageReference = ref(storage, `images/${recipeReference.id}`);
+  const imageBlob = await uriToBlob(image);
+  const result = await uploadBytes(imageReference, imageBlob);
+  const newImage = await getDownloadURL(result.ref);
+
+  await updateDoc(recipeReference, { image: newImage });
+};
+
 const createRecipe = async (recipe: Recipe): Promise<void> => {
-  await addDoc(recipesCollection, recipe);
+  const recipeDocument = await addDoc(recipesCollection, recipe);
+
+  if (recipe.image != null) {
+    await updateRecipeImage(recipeDocument, recipe.image);
+  }
 };
 
 const findRecipes = async (): Promise<Recipe[]> => {
@@ -75,9 +93,16 @@ const findRecipeById = async (id: string): Promise<Recipe> => {
 const updateRecipe = async (
   id: string,
   recipe: Partial<Recipe>
-): Promise<void> => {
+): Promise<Recipe> => {
   const recipeSnap = await findRecipeDocumentSnapById(id);
+
   await updateDoc(recipeSnap.ref, recipe);
+
+  if (recipe.image !== undefined && recipe.image !== null) {
+    await updateRecipeImage(recipeSnap.ref, recipe.image);
+  }
+
+  return recipeSnap.data();
 };
 
-export { createRecipe, findRecipes, findRecipeById, updateRecipe };
+export { createRecipe, findRecipeById, findRecipes, updateRecipe };

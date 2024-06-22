@@ -1,7 +1,7 @@
 import { Radius } from "@/app/config/Radius";
 import Feather from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Image,
   ImageResizeMode,
@@ -17,15 +17,10 @@ export type AppImagePickerProps = {
   imageUri?: string;
   onChangeImageUri?: (imageUri: string | undefined) => void;
   resizeMode?: ImageResizeMode;
+  disabled?: boolean;
   radius?: keyof typeof Radius;
   style?: StyleProp<ViewStyle>;
   removeButtonStyle?: StyleProp<ViewStyle>;
-};
-
-const requestPermission = async () => {
-  const response = await ImagePicker.requestCameraPermissionsAsync();
-
-  return response.granted;
 };
 
 export const AppImagePicker = (props: AppImagePickerProps) => {
@@ -33,23 +28,20 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
     imageUri,
     onChangeImageUri,
     resizeMode = "cover",
+    disabled = false,
     radius = "md",
     style,
     removeButtonStyle,
   } = props;
 
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
+
   const [innerImageUri, setInnerImageUri] = useState<string | undefined>();
-  const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
 
   const finalImageUri = imageUri ?? innerImageUri;
   const finalOnChangeImageUri = onChangeImageUri ?? setInnerImageUri;
 
   const stylesWithParameters = styles({ radius });
-
-  const requestAndGrantPermission = async () => {
-    const granted = await requestPermission();
-    setPermissionGranted(granted);
-  };
 
   const selectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync();
@@ -61,9 +53,10 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
 
   return (
     <View style={[stylesWithParameters.container, style]}>
-      {!permissionGranted ? (
+      {!status?.granted ? (
         <AppButton
-          onPress={() => requestAndGrantPermission()}
+          disabled={disabled}
+          onPress={requestPermission}
           variant="neutral"
           radius="no"
           title={
@@ -82,6 +75,7 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
         />
       ) : (
         <AppButton
+          disabled={disabled}
           onPress={selectImage}
           variant="neutral"
           radius="no"
@@ -107,8 +101,9 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
           style={stylesWithParameters.uploadImageButton}
         />
       )}
-      {permissionGranted && finalImageUri != null && (
+      {status?.granted && finalImageUri != null && (
         <AppButton
+          disabled={disabled}
           radius="xl"
           variant="neutral"
           style={[stylesWithParameters.removeImageButton, removeButtonStyle]}
