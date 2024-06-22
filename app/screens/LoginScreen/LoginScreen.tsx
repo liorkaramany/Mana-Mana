@@ -23,7 +23,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         // User is logged in, navigate to home screen
-        navigation.navigate('Home'); // Replace 'Home' with your actual screen name
+        navigation.navigate('Home');
       }
     });
 
@@ -40,7 +40,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       setError(null); // Clear any previous errors
       console.log('User logged in:', userCredential.user);
       // Navigate to home screen
-      navigation.navigate('Home'); // Replace 'Home' with your actual screen name
+      navigation.navigate('Home');
     } catch (error) {
       setError(error.message);
       console.error('Login error:', error);
@@ -53,7 +53,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       setError(null); // Clear any previous errors
       console.log('User signed up:', userCredential.user);
       // Navigate to home screen
-      navigation.navigate('Home'); // Replace 'Home' with your actual screen name
+      navigation.navigate('Home');
     } catch (error) {
       setError(error.message);
       console.error('Signup error:', error);
