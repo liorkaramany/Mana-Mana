@@ -33,6 +33,8 @@ export type Recipe = {
   instructions: string[];
 };
 
+export type RecipeWithRating = Recipe & { rating: number | null };
+
 export class RecipeNotFound extends Error {
   constructor(id: string) {
     super(`Recipe with id: [ ${id} ] was not found.`);
@@ -74,10 +76,15 @@ const createRecipe = async (recipe: Recipe): Promise<void> => {
   }
 };
 
-const findRecipes = async (): Promise<Recipe[]> => {
+const findRecipes = async (): Promise<RecipeWithRating[]> => {
   const querySnapshot = await getDocs(recipesCollection);
 
-  return querySnapshot.docs.map((document) => document.data());
+  return await Promise.all(
+    querySnapshot.docs.map(async (document) => ({
+      ...document.data(),
+      rating: await averageRecipeRating(document.id),
+    }))
+  );
 };
 
 const findRecipeDocumentSnapById = async (id: string) => {
