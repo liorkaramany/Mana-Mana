@@ -7,8 +7,10 @@ import { AppButton } from '@/app/components/AppButton';
 import { AppText } from '@/app/components/AppText';
 import { StackParamList } from '@/app/types/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { auth } from '../../firebase/firebase';
+import { auth, db } from '../../firebase/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { Firestore, collection, doc, setDoc } from 'firebase/firestore';
+import { User, createUser } from '@/app/models/user';
 
 type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
@@ -38,7 +40,8 @@ export const LoginScreen = (props: LoginScreenProps) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setError(null); // Clear any previous errors
-      console.log('User logged in:', userCredential.user);
+
+      console.log('User logged in successfully!');
       // Navigate to home screen
       navigation.navigate('Home');
     } catch (error) {
@@ -51,6 +54,17 @@ export const LoginScreen = (props: LoginScreenProps) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       setError(null); // Clear any previous errors
+      const user = userCredential.user; // Get the newly created user object
+      
+      const userData = {
+        name: userCredential.user.email,
+        uid: userCredential.user.uid,
+        image: null,
+      };
+
+      createUser(userData);
+      console.log('User data added to Firestore:', userData);
+
       console.log('User signed up:', userCredential.user);
       // Navigate to home screen
       navigation.navigate('Home');
