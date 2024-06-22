@@ -14,6 +14,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { converter } from "../firebase/utilities";
 import { uriToBlob } from "../utilities";
+import { findUserDetailsById } from "./user";
 
 export type RecipeIngredient = {
   name: string;
@@ -69,6 +70,7 @@ const updateRecipeImage = async (
 };
 
 const createRecipe = async (recipe: Recipe): Promise<void> => {
+  await findUserDetailsById(recipe.author);
   const recipeDocument = await addDoc(recipesCollection, recipe);
 
   if (recipe.image != null) {
