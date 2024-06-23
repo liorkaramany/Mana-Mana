@@ -14,7 +14,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { converter } from "../firebase/utilities";
 import { uriToBlob } from "../utilities";
-import { findUserDetailsById } from "./user";
+import { UserDetails, findUserDetailsById } from "./user";
 
 export type RecipeIngredient = {
   name: string;
@@ -35,6 +35,11 @@ export type Recipe = {
 };
 
 export type RecipeWithRating = Recipe & { rating: number | null };
+
+export type FullRecipe = Omit<RecipeWithRating, "author"> & {
+  id: string;
+  author: UserDetails;
+};
 
 export class RecipeNotFoundError extends Error {
   constructor(id: string) {
@@ -78,14 +83,23 @@ const createRecipe = async (recipe: Recipe): Promise<void> => {
   }
 };
 
-const findRecipes = async (): Promise<RecipeWithRating[]> => {
+const findRecipes = async (): Promise<FullRecipe[]> => {
   const querySnapshot = await getDocs(recipesCollection);
 
   return await Promise.all(
-    querySnapshot.docs.map(async (document) => ({
-      ...document.data(),
-      rating: await averageRecipeRating(document.id),
-    }))
+    querySnapshot.docs.map(async (document) => {
+      const recipe = document.data();
+      const recipeWithoutAuthor = (({ author, ...rest }) => ({ ...rest }))(
+        recipe
+      );
+
+      return {
+        id: document.id,
+        ...recipeWithoutAuthor,
+        author: await findUserDetailsById(recipe.author),
+        rating: await averageRecipeRating(document.id),
+      };
+    })
   );
 };
 
