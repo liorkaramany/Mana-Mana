@@ -1,12 +1,10 @@
 import { AppButton } from "@/app/components/AppButton";
 import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
+import { UserDetailsWithoutEmail } from "@/app/models/user";
 import { StackParamList } from "@/app/types/navigation";
+import { UserViewModel } from "@/app/viewmodels/user";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { auth } from "../../firebase/firebase";
@@ -17,9 +15,12 @@ type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 export const LoginScreen = (props: LoginScreenProps) => {
   const { navigation } = props;
   const [showLogin, setShowLogin] = useState(true);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const { signIn, signUp } = UserViewModel();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -38,13 +39,10 @@ export const LoginScreen = (props: LoginScreenProps) => {
 
   const handleLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signIn(email, password);
       setError(null); // Clear any previous errors
       console.log("User logged in:", userCredential.user);
+
       // Navigate to home screen
       navigation.navigate("Home");
     } catch (error) {
@@ -55,13 +53,15 @@ export const LoginScreen = (props: LoginScreenProps) => {
 
   const handleSignup = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
+      const userCredential = await signUp(
         email,
-        password
+        password,
+        // TODO: Fill in the details
+        {} as UserDetailsWithoutEmail
       );
       setError(null); // Clear any previous errors
       console.log("User signed up:", userCredential.user);
+
       // Navigate to home screen
       navigation.navigate("Home");
     } catch (error) {

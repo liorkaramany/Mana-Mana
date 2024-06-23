@@ -16,6 +16,10 @@ export const HomeScreen = (props: HomeScreenProps) => {
         title="Upload Recipe"
         onPress={() => navigation.navigate("NewRecipe")}
       />
+      <AppButton
+        title="View Recipe"
+        onPress={() => navigation.navigate("ViewRecipe", { recipeId: "pfjX5EF8H2zpZcrEdpWR"})}
+      />
     </View>
   );
 };

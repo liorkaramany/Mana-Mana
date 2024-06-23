@@ -14,6 +14,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { converter } from "../firebase/utilities";
 import { uriToBlob } from "../utilities";
+import { findUserDetailsById } from "./user";
 
 export type RecipeIngredient = {
   name: string;
@@ -35,13 +36,13 @@ export type Recipe = {
 
 export type RecipeWithRating = Recipe & { rating: number | null };
 
-export class RecipeNotFound extends Error {
+export class RecipeNotFoundError extends Error {
   constructor(id: string) {
     super(`Recipe with id: [ ${id} ] was not found.`);
   }
 }
 
-export class RecipeRatingNotFound extends Error {
+export class RecipeRatingNotFoundError extends Error {
   constructor(recipeId: string, userId: string) {
     super(
       `Recipe Rating with recipeId: [ ${recipeId} ] of userId: [ ${userId} ] was not found.`
@@ -69,6 +70,7 @@ const updateRecipeImage = async (
 };
 
 const createRecipe = async (recipe: Recipe): Promise<void> => {
+  await findUserDetailsById(recipe.author);
   const recipeDocument = await addDoc(recipesCollection, recipe);
 
   if (recipe.image != null) {
@@ -94,7 +96,7 @@ const findRecipeDocumentSnapById = async (id: string) => {
   const recipeSnap = await getDoc(documentReference);
 
   if (!recipeSnap.exists()) {
-    throw new RecipeNotFound(id);
+    throw new RecipeNotFoundError(id);
   }
 
   return recipeSnap;
@@ -125,6 +127,7 @@ const rateRecipe = async (
   recipeRating: RecipeRating
 ) => {
   const recipeSnap = await findRecipeDocumentSnapById(recipeId);
+  await findUserDetailsById(userId);
 
   await setDoc(doc(recipeSnap.ref, "ratings", userId), recipeRating);
 };
@@ -151,7 +154,7 @@ const findRecipeRatingSnap = async (recipeId: string, userId: string) => {
   const recipeDocumentSnap = await getDoc(recipeRatingDocument);
 
   if (!recipeDocumentSnap.exists()) {
-    throw new RecipeRatingNotFound(recipeId, userId);
+    throw new RecipeRatingNotFoundError(recipeId, userId);
   }
 
   return recipeDocumentSnap;
