@@ -13,7 +13,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
-import { Recipe } from "@/app/models/recipe";
+import { FullRecipe, Recipe } from "@/app/models/recipe";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -42,7 +42,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
     );
   }
 
-  const navigateToRecipe = (recipe: Recipe) => {};
+  const navigateToRecipe = (recipe: FullRecipe) => {};
 
   return (
     <View style={styles.container}>
@@ -56,16 +56,10 @@ export const HomeScreen = (props: HomeScreenProps) => {
       <FlatList
         style={styles.recipesList}
         contentContainerStyle={styles.recipesListItem}
-        data={recipes.map((r, i) => ({
-          ...r,
-          id: i.toString(),
-          author: { name: "Test", image: null },
-        }))}
+        data={recipes}
         renderItem={({ item: recipe }) => (
-          <TouchableOpacity
-            onPress={() => navigateToRecipe(recipe as unknown as Recipe)}
-          >
-            <RecipeCard recipe={recipe as RecipeWithAuthorAndRating} />
+          <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
+            <RecipeCard recipe={recipe} />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
