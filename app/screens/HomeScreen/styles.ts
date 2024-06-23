@@ -16,4 +16,10 @@ export const styles = StyleSheet.create({
     bottom: 16,
     right: 16,
   },
+  recipesList: {
+    marginTop: 16,
+  },
+  recipesListItem: {
+    gap: 32,
+  },
 });
