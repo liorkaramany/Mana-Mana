@@ -3,6 +3,9 @@ import { AppText } from "@/app/components/AppText";
 import { StackParamList } from "@/app/types/navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { View } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import { styles } from "./styles";
+import { Colors } from "@/app/config/Colors";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -10,15 +13,13 @@ export const HomeScreen = (props: HomeScreenProps) => {
   const { navigation } = props;
 
   return (
-    <View>
+    <View style={styles.container}>
       <AppText>Home Screen</AppText>
       <AppButton
-        title="Upload Recipe"
+        variant="neutral"
+        style={styles.addRecipeButton}
+        title={<Feather name="plus" size={40} color={Colors.tint} />}
         onPress={() => navigation.navigate("NewRecipe")}
-      />
-      <AppButton
-        title="View Recipe"
-        onPress={() => navigation.navigate("ViewRecipe", { recipeId: "pfjX5EF8H2zpZcrEdpWR"})}
       />
     </View>
   );

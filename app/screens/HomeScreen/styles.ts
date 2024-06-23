@@ -3,7 +3,16 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    position: "relative",
+  },
+  addRecipeButton: {
+    aspectRatio: 1,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    width: 80,
+    borderRadius: 100,
+    position: "absolute",
+    bottom: 24,
+    right: 24,
   },
 });
