@@ -42,7 +42,13 @@ export const HomeScreen = (props: HomeScreenProps) => {
     );
   }
 
-  const navigateToRecipe = (recipe: FullRecipe) => {};
+  const filteredRecipes = recipes.filter((recipe) =>
+    recipe.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const navigateToRecipe = (recipe: FullRecipe) => {
+    navigation.navigate("ViewRecipe", { recipeId: recipe.id });
+  };
 
   return (
     <View style={styles.container}>
@@ -56,7 +62,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
       <FlatList
         style={styles.recipesList}
         contentContainerStyle={styles.recipesListItem}
-        data={recipes}
+        data={filteredRecipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
             <RecipeCard recipe={recipe} />
