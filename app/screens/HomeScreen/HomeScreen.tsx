@@ -42,7 +42,9 @@ export const HomeScreen = (props: HomeScreenProps) => {
     );
   }
 
-  const navigateToRecipe = (recipe: FullRecipe) => {};
+  const navigateToRecipe = (recipe: FullRecipe) => {
+    navigation.navigate("ViewRecipe", { recipeId: recipe.id });
+  };
 
   return (
     <View style={styles.container}>
