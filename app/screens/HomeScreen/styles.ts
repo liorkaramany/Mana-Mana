@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     width: 80,
     borderRadius: 100,
     position: "absolute",
-    bottom: 24,
-    right: 24,
+    bottom: 16,
+    right: 16,
   },
 });
