@@ -6,15 +6,25 @@ import { View } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import { styles } from "./styles";
 import { Colors } from "@/app/config/Colors";
+import { AppTextInput } from "@/app/components/AppTextInput";
+import { useState } from "react";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
 export const HomeScreen = (props: HomeScreenProps) => {
   const { navigation } = props;
 
+  const [search, setSearch] = useState<string>("");
+
   return (
     <View style={styles.container}>
-      <AppText>Home Screen</AppText>
+      <AppTextInput
+        radius="xl"
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Search Recipe"
+        size="lg"
+      />
       <AppButton
         variant="neutral"
         style={styles.addRecipeButton}
