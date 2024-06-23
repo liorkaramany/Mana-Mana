@@ -2,35 +2,35 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   image: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center'
+    width: "100%",
+    aspectRatio: 4 / 3,
+    alignSelf: "center",
   },
   content: {
     padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 10,
   },
   tag: {
-    backgroundColor: '#eee',
+    backgroundColor: "#eee",
     padding: 5,
     marginRight: 5,
     borderRadius: 5,
   },
   heading: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   ingredients: {
@@ -46,29 +46,29 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
   },
   buttons: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   button: {
     marginLeft: 10,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   details: {
     flex: 1,
     padding: 20,
-    borderRadius: 5
+    borderRadius: 5,
   },
 });
