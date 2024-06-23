@@ -15,6 +15,7 @@ type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 export const LoginScreen = (props: LoginScreenProps) => {
   const { navigation } = props;
   const [showLogin, setShowLogin] = useState(true);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -41,11 +42,11 @@ export const LoginScreen = (props: LoginScreenProps) => {
       const userCredential = await signIn(email, password);
       setError(null); // Clear any previous errors
       console.log("User logged in:", userCredential.user);
-        
+
       // Navigate to home screen
       navigation.navigate("Home");
     } catch (error) {
-      setError(error.message);
+      setError((error as Error).message);
       console.error("Login error:", error);
     }
   };
@@ -64,7 +65,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       // Navigate to home screen
       navigation.navigate("Home");
     } catch (error) {
-      setError(error.message);
+      setError((error as Error).message);
       console.error("Signup error:", error);
     }
   };
