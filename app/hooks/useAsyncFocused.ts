@@ -4,6 +4,7 @@ import { DependencyList, useCallback, useState } from "react";
 export type UseAsyncFocusedParameters<Response> = {
   action: () => Promise<Response>;
   dependencies: DependencyList;
+  onError?: (error: Error) => void;
 };
 
 export type UseAsyncFocusedParametersReturnValue<Response> = {
@@ -15,7 +16,7 @@ export type UseAsyncFocusedParametersReturnValue<Response> = {
 export const useAsyncFocused = <Response>(
   parameters: UseAsyncFocusedParameters<Response>
 ): UseAsyncFocusedParametersReturnValue<Response> => {
-  const { action, dependencies } = parameters;
+  const { action, dependencies, onError } = parameters;
 
   const [response, setResponse] = useState<Response>();
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,6 +38,7 @@ export const useAsyncFocused = <Response>(
       } catch (error) {
         if (isActive) {
           setError(error as Error);
+          onError?.(error as Error);
         }
       } finally {
         if (isActive) {

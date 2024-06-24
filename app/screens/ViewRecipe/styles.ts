@@ -71,4 +71,14 @@ export const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 5,
   },
+  ratingCard: {
+    margin: 20,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  ratingCardText: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
 });
