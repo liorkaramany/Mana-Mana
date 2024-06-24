@@ -35,11 +35,13 @@ export const AppCard = (props: AppCardProps) => {
 
   return (
     <View style={[stylesWithParameters.container, style]}>
-      <Image
-        resizeMode={imageResizeMode}
-        style={[stylesWithParameters.image, imageStyle]}
-        src={image}
-      />
+      {image != null && (
+        <Image
+          resizeMode={imageResizeMode}
+          style={[stylesWithParameters.image, imageStyle]}
+          src={image}
+        />
+      )}
       <View style={[stylesWithParameters.content, contentStyle]}>
         {children}
       </View>
