@@ -8,7 +8,7 @@ import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { UserViewModel } from "@/app/viewmodels/user";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -20,6 +20,7 @@ import {
 import Toast from "react-native-toast-message";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { styles } from "./styles";
+import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 
 export type ViewRecipeProps = NativeStackScreenProps<
   StackParamList,
@@ -48,12 +49,14 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
     dependencies: [recipeId],
   });
 
+  const [isRating, setIsRating] = useState<boolean>(false);
+
   const { loading: isRatingLoading, response: rating } = useAsyncFocused({
     action: () =>
       currentUser == null
         ? Promise.resolve(null)
         : findRecipeRating(recipeId, currentUser.uid),
-    dependencies: [recipeId],
+    dependencies: [recipeId, currentUser?.uid],
     onError: (error) => {
       console.log(
         `Error: ViewRecipe > findRecipeRating(${recipeId}, ${
@@ -100,17 +103,22 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
   const handleDeletePress = async () => {};
 
   const handleRating = async (ratingValue: number) => {
-    if (currentUser == null) {
-      console.log(`Error: ViewRecipe > handleRating(${ratingValue}):`, error);
-
+    const showErrorToast = () => {
       Toast.show({
         type: "error",
         text1: "Oh no!",
         text2:
           "There was a problem rating this recipe, please try again later.",
       });
+    };
+
+    if (currentUser == null) {
+      console.log(`Error: ViewRecipe > handleRating(${ratingValue}):`, error);
+
+      showErrorToast();
     } else {
       try {
+        setIsRating(true);
         await rate(recipeId, currentUser?.uid, { rating: ratingValue });
         Toast.show({
           type: "success",
@@ -118,12 +126,9 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
           text2: "Your rating for this recipe was saved!",
         });
       } catch (error) {
-        Toast.show({
-          type: "error",
-          text1: "Oh no!",
-          text2:
-            "There was a problem rating this recipe, please try again later.",
-        });
+        showErrorToast();
+      } finally {
+        setIsRating(false);
       }
     }
   };
@@ -182,9 +187,10 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
           <AppText type="defaultSemiBold" style={styles.ratingCardText}>
             How would you rate this recipe?
           </AppText>
-          {isRatingLoading ? (
-            <ActivityIndicator color={Colors.tint} />
-          ) : (
+          <AppLoadingOverlay
+            loading={isRatingLoading || isRating}
+            contentStyle={styles.ratingLoadingContent}
+          >
             <AppRating
               fractions={0}
               startingValue={noRatingFound ? 0 : rating?.rating ?? 0}
@@ -193,7 +199,7 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
               }
               imageSize={32}
             />
-          )}
+          </AppLoadingOverlay>
         </AppCard>
       )}
     </SafeAreaView>

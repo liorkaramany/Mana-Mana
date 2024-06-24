@@ -81,4 +81,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  ratingLoadingContent: {
+    flex: 0,
+  },
 });
