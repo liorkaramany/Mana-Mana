@@ -12,6 +12,7 @@ import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 import { UserViewModel } from "@/app/viewmodels/user";
+import { StackActions } from "@react-navigation/native";
 
 export type NewRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -44,12 +45,20 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
       setUploading(true);
 
       try {
-        await createRecipe({ ...recipe, author: currentUser.uid });
+        const newRecipeId = await createRecipe({
+          ...recipe,
+          author: currentUser.uid,
+        });
         Toast.show({
           type: "success",
           text1: "Success!",
           text2: "The recipe has been created!",
         });
+        navigation.dispatch(
+          StackActions.replace("ViewRecipe", {
+            recipeId: newRecipeId,
+          })
+        );
       } catch (error) {
         Toast.show({
           type: "error",
