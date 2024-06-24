@@ -48,8 +48,13 @@ export const RecipeForm = (props: RecipeFormProps) => {
   const emptyIngredientsExist = innerRecipe.ingredients.some(
     (ingredient) => ingredient.name.length === 0 || ingredient.amount === 0
   );
+  const noImage = innerRecipe.image == null;
   const disabledSubmitButton =
-    isTitleEmpty || noTags || emptyInstructionsExist || emptyIngredientsExist;
+    isTitleEmpty ||
+    noTags ||
+    emptyInstructionsExist ||
+    emptyIngredientsExist ||
+    noImage;
 
   const getInnerRecipePropertySetter = <T extends keyof RecipeFormValueType>(
     property: T
