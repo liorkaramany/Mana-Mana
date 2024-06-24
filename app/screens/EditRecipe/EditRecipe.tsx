@@ -48,6 +48,7 @@ export const EditRecipe = (props: EditRecipeScreenProps) => {
         text1: "Success!",
         text2: "The recipe has been saved!",
       });
+      navigation.pop();
     } catch (error) {
       Toast.show({
         type: "error",

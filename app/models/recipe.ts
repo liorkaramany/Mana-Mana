@@ -28,7 +28,7 @@ export type RecipeRating = {
 export type Recipe = {
   author: string;
   title: string;
-  image: string | null;
+  image: string;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string[];

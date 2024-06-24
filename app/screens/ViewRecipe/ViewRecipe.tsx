@@ -1,5 +1,5 @@
 import { AppText } from "@/app/components/AppText";
-import { useAsync } from "@/app/hooks/useAsync";
+import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { UserViewModel } from "@/app/viewmodels/user";
@@ -21,7 +21,7 @@ export type ViewRecipeProps = NativeStackScreenProps<
 >;
 
 export const ViewRecipe = (props: ViewRecipeProps) => {
-  const { route } = props;
+  const { navigation, route } = props;
 
   const { currentUser } = UserViewModel();
 
@@ -33,7 +33,10 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
     loading: isLoading,
     response: recipe,
     error,
-  } = useAsync({ action: () => findRecipeById(recipeId) });
+  } = useAsyncFocused({
+    action: () => findRecipeById(recipeId),
+    dependencies: [recipeId],
+  });
 
   if (isLoading) {
     return (
@@ -53,7 +56,9 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
 
   const { author, title, tags, ingredients, instructions } = recipe;
 
-  const handleEditPress = () => {};
+  const handleEditPress = () => {
+    navigation.navigate("EditRecipe", { recipeId });
+  };
 
   const handleDeletePress = async () => {};
 
