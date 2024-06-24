@@ -28,7 +28,7 @@ export type RecipeRating = {
 export type Recipe = {
   author: string;
   title: string;
-  image: string | null;
+  image: string;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string[];
@@ -74,13 +74,15 @@ const updateRecipeImage = async (
   await updateDoc(recipeReference, { image: newImage });
 };
 
-const createRecipe = async (recipe: Recipe): Promise<void> => {
+const createRecipe = async (recipe: Recipe): Promise<string> => {
   await findUserDetailsById(recipe.author);
   const recipeDocument = await addDoc(recipesCollection, recipe);
 
   if (recipe.image != null) {
     await updateRecipeImage(recipeDocument, recipe.image);
   }
+
+  return recipeDocument.id;
 };
 
 const findRecipes = async (): Promise<FullRecipe[]> => {
