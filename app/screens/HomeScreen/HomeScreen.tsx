@@ -1,11 +1,9 @@
 import { AppButton } from "@/app/components/AppButton";
 import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
-import {
-  RecipeCard,
-  RecipeWithAuthorAndRating,
-} from "@/app/components/RecipeCard";
+import { RecipeCard } from "@/app/components/RecipeCard";
 import { Colors } from "@/app/config/Colors";
+import { FullRecipe } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import Feather from "@expo/vector-icons/Feather";
@@ -13,7 +11,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
-import { FullRecipe, Recipe } from "@/app/models/recipe";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -22,7 +19,12 @@ export const HomeScreen = (props: HomeScreenProps) => {
 
   const [search, setSearch] = useState<string>("");
 
-  const { recipes, loading, error } = RecipeViewModel();
+  const {
+    recipes,
+    loading,
+    error,
+    refetch: refetchRecipes,
+  } = RecipeViewModel();
 
   if (loading) {
     return (
@@ -60,6 +62,8 @@ export const HomeScreen = (props: HomeScreenProps) => {
         size="lg"
       />
       <FlatList
+        refreshing={loading}
+        onRefresh={refetchRecipes}
         style={styles.recipesList}
         contentContainerStyle={styles.recipesListItem}
         data={filteredRecipes}
