@@ -8,6 +8,7 @@ import { AppText } from "../AppText";
 import { UserWithAvatar } from "../UserWithAvatar";
 import { styles } from "./styles";
 import { UserViewModel } from "@/app/viewmodels/user";
+import { UserDetails } from "@/app/models/user";
 
 export type RecipeCardProps = Pick<
   AppCardProps,
@@ -15,9 +16,9 @@ export type RecipeCardProps = Pick<
 > & {
   recipe: FullRecipe;
   onEdit?: () => void;
-  onDelete?: () => void;
+  onDelete?: (recipeId: string) => void;
   isInUserFeed?: boolean;
-  onUserPressed?: (userId: string) => void;
+  onUserPressed?: (user: UserDetails) => void;
 };
 
 export const RecipeCard = (props: RecipeCardProps) => {
@@ -50,7 +51,7 @@ export const RecipeCard = (props: RecipeCardProps) => {
                 title={<Feather name="edit-2" size={20} />}
               />
               <AppButton
-                onPress={onDelete}
+                onPress={() => onDelete && onDelete(recipe.id)}
                 variant="neutral"
                 size="sm"
                 style={styles.actionButton}

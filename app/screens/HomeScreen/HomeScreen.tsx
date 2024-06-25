@@ -25,6 +25,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
     loading,
     error,
     refetch: refetchRecipes,
+    deleteRecipe
   } = RecipeViewModel();
 
   if (loading) {
@@ -48,6 +49,21 @@ export const HomeScreen = (props: HomeScreenProps) => {
   const filteredRecipes = recipes.filter((recipe) =>
     recipe.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleDeletePress = (recipeId: string) => {
+    if (!recipeId) {
+      console.log("Missing recipe ID for deletion.");
+      return;
+    }
+  
+    try {
+      deleteRecipe(recipeId);
+      refetchRecipes();
+      console.log("Recipe deleted successfully!");
+    } catch (error) {
+      console.log("Error deleting recipe:", error);
+    }
+  };
 
   const navigateToRecipe = (recipe: FullRecipe) => {
     navigation.navigate("ViewRecipe", { recipeId: recipe.id });
@@ -75,11 +91,10 @@ export const HomeScreen = (props: HomeScreenProps) => {
         data={filteredRecipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
-            <RecipeCard
-              recipe={recipe}
-              isInUserFeed={false}
-              onUserPressed={navigateToUser}
-            />
+            <RecipeCard recipe={recipe} 
+            isInUserFeed={false} 
+            onUserPressed={navigateToUser} 
+            onDelete={handleDeletePress}/>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}

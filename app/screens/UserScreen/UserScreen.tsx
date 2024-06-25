@@ -46,6 +46,7 @@ export const UserScreen = (props: UserScreenProps) => {
     loading,
     error,
     refetch: refetchRecipes,
+    deleteRecipe
   } = RecipeViewModel();
 
   if (userLoading || loading) {
@@ -78,6 +79,21 @@ export const UserScreen = (props: UserScreenProps) => {
     recipe.author.id == userId
   );
 
+  const handleDeletePress = (recipeId: string) => {
+    if (!recipeId) {
+      console.log("Missing recipe ID for deletion.");
+      return;
+    }
+  
+    try {
+      deleteRecipe(recipeId);
+      refetchRecipes();
+      console.log("Recipe deleted successfully!");
+    } catch (error) {
+      console.log("Error deleting recipe:", error);
+    }
+  };
+
   const navigateToRecipe = (recipe: FullRecipe) => {
     navigation.navigate("ViewRecipe", { recipeId: recipe.id });
   };
@@ -96,7 +112,9 @@ export const UserScreen = (props: UserScreenProps) => {
         data={filteredRecipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
-            <RecipeCard recipe={recipe} isInUserFeed={true} />
+            <RecipeCard recipe={recipe} 
+            isInUserFeed={true} 
+            onDelete={handleDeletePress}/>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
