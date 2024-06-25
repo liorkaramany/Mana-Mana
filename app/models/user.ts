@@ -7,6 +7,7 @@ import { auth, db } from "../firebase";
 import { converter } from "../firebase/utilities";
 
 export type UserDetails = {
+  id: string;
   email: string;
   name: string;
   image: string | null;
@@ -37,6 +38,9 @@ const signUpUser = async (
 
   await setDoc(doc(usersCollection, userCredential.user.uid), {
     ...userDetails,
+    id: userCredential.user.uid,
+    name: email,
+    image: null,
     email,
   } satisfies UserDetails);
 

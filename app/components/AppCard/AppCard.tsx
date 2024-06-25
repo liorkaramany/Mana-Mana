@@ -39,7 +39,7 @@ export const AppCard = (props: AppCardProps) => {
         <Image
           resizeMode={imageResizeMode}
           style={[stylesWithParameters.image, imageStyle]}
-          src={image}
+          source={{uri: image}}
         />
       )}
       <View style={[stylesWithParameters.content, contentStyle]}>

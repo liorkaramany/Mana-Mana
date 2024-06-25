@@ -1,12 +1,13 @@
 import { FullRecipe } from "@/app/models/recipe";
 import Feather from "@expo/vector-icons/Feather";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { AppButton } from "../AppButton";
 import { AppCard, AppCardProps } from "../AppCard";
 import { AppRating } from "../AppRating";
 import { AppText } from "../AppText";
 import { UserWithAvatar } from "../UserWithAvatar";
 import { styles } from "./styles";
+import { UserViewModel } from "@/app/viewmodels/user";
 
 export type RecipeCardProps = Pick<
   AppCardProps,
@@ -15,11 +16,13 @@ export type RecipeCardProps = Pick<
   recipe: FullRecipe;
   onEdit?: () => void;
   onDelete?: () => void;
-  withActions?: boolean;
+  isInUserFeed?: boolean;
+  onUserPressed?: (userId: string) => void;
 };
 
 export const RecipeCard = (props: RecipeCardProps) => {
-  const { recipe, onEdit, onDelete, withActions = false, ...rest } = props;
+  const { recipe, onEdit, onDelete, isInUserFeed, onUserPressed, ...rest } = props;
+  const { currentUser } = UserViewModel();
 
   const ingredientsList = recipe.ingredients
     .map((ingredient) => `\u2022 ${ingredient.name}: ${ingredient.amount}`)
@@ -31,27 +34,31 @@ export const RecipeCard = (props: RecipeCardProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.actions}>
-        <UserWithAvatar name={recipe.author.name} image={recipe.author.image} />
-        {withActions && (
-          <View style={styles.actionButtons}>
-            <AppButton
-              onPress={onEdit}
-              variant="neutral"
-              size="sm"
-              style={styles.actionButton}
-              title={<Feather name="edit-2" size={20} />}
-            />
-            <AppButton
-              onPress={onDelete}
-              variant="neutral"
-              size="sm"
-              style={styles.actionButton}
-              title={<Feather name="trash-2" size={20} />}
-            />
-          </View>
-        )}
-      </View>
+        <View style={styles.actions}>
+        {!isInUserFeed && (
+          <TouchableOpacity onPress={() => (onUserPressed(recipe.author))}>
+            <UserWithAvatar name={recipe.author.name} image={recipe.author.image}  />
+          </TouchableOpacity>
+          )}
+          {currentUser?.uid == recipe.author.id && (
+            <View style={styles.actionButtons}>
+              <AppButton
+                onPress={onEdit}
+                variant="neutral"
+                size="sm"
+                style={styles.actionButton}
+                title={<Feather name="edit-2" size={20} />}
+              />
+              <AppButton
+                onPress={onDelete}
+                variant="neutral"
+                size="sm"
+                style={styles.actionButton}
+                title={<Feather name="trash-2" size={20} />}
+              />
+            </View>
+          )}
+        </View>
       <AppCard {...rest} image={recipe.image ?? undefined}>
         <AppText type="defaultSemiBold">{recipe.title}</AppText>
         <AppText>Ingredients</AppText>

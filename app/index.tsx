@@ -12,6 +12,7 @@ import "./firebase";
 import Toast from "react-native-toast-message";
 import { EditRecipe } from "./screens/EditRecipe";
 import { ViewRecipe } from "./screens/ViewRecipe";
+import { UserScreen } from "./screens/UserScreen";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -47,6 +48,7 @@ export default function App() {
         <Stack.Screen name="NewRecipe" component={NewRecipe} />
         <Stack.Screen name="EditRecipe" component={EditRecipe} />
         <Stack.Screen name="ViewRecipe" component={ViewRecipe} />
+        <Stack.Screen name="User" component={UserScreen} />
       </Stack.Navigator>
       <Toast />
     </>
