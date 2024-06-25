@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -51,6 +52,10 @@ const signInUser = async (email: string, password: string) => {
   return await signInWithEmailAndPassword(auth, email, password);
 };
 
+const signOutUser = async () => {
+  await signOut(auth);
+};
+
 const findUserSnapById = async (id: string) => {
   const documentReference = doc(usersCollection, id);
 
@@ -76,4 +81,4 @@ const updateUser = async (
   await updateDoc(userSnap.ref, userDetails);
 };
 
-export { findUserDetailsById, signInUser, signUpUser, updateUser };
+export { findUserDetailsById, signInUser, signOutUser, signUpUser, updateUser };

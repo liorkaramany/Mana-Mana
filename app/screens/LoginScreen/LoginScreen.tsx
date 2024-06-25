@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { auth } from "../../firebase/firebase";
 import styles from "./styles";
+import { StackActions } from "@react-navigation/native";
 
 type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
@@ -26,7 +27,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         // User is logged in, navigate to home screen
-        navigation.navigate("Home");
+        navigation.dispatch(StackActions.replace("Home"));
       }
     });
 
@@ -44,7 +45,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       console.log("User logged in:", userCredential.user);
 
       // Navigate to home screen
-      navigation.navigate("Home");
+      navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
       setError((error as Error).message);
       console.error("Login error:", error);
@@ -63,7 +64,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
       console.log("User signed up:", userCredential.user);
 
       // Navigate to home screen
-      navigation.navigate("Home");
+      navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
       setError((error as Error).message);
       console.error("Signup error:", error);
