@@ -8,7 +8,9 @@ import {
   findRecipes,
   rateRecipe,
   updateRecipe,
-  findUserRecipes
+  findUserRecipes,
+  deleteRecipe,
+  deleteRecipeModel
 } from "../models/recipe";
 
 export const RecipeViewModel = () => {
@@ -37,6 +39,10 @@ export const RecipeViewModel = () => {
   const userRecipes = async (userId: string) =>
     await findUserRecipes(userId)
 
+  const deleteRecipe = async (id: string) => {
+    await deleteRecipeModel(id);
+  }
+
   return {
     recipes,
     loading,
@@ -47,6 +53,7 @@ export const RecipeViewModel = () => {
     update,
     rate,
     findRecipeRating,
-    userRecipes
+    userRecipes,
+    deleteRecipe
   };
 };
