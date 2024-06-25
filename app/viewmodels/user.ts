@@ -6,6 +6,7 @@ import {
   UserDetailsWithoutEmail,
   findUserDetailsById,
   signInUser,
+  signOutUser,
   signUpUser,
   updateUser,
 } from "../models/user";
@@ -44,6 +45,8 @@ export const UserViewModel = () => {
   const signIn = async (email: string, password: string) =>
     await signInUser(email, password);
 
+  const signOut = async () => await signOutUser();
+
   const findDetailsById = async (id: string) => await findUserDetailsById(id);
 
   const update = async (id: string, userDetails: Partial<UserDetails>) =>
@@ -54,6 +57,7 @@ export const UserViewModel = () => {
     currentUserDetais,
     signUp,
     signIn,
+    signOut,
     findDetailsById,
     update,
   };
