@@ -79,6 +79,10 @@ export const UserScreen = (props: UserScreenProps) => {
     recipe.author.id == userId
   );
 
+  const handleEditPress = (recipeId: string) => {
+    navigation.navigate("EditRecipe", { recipeId });
+  };
+
   const handleDeletePress = (recipeId: string) => {
     if (!recipeId) {
       console.log("Missing recipe ID for deletion.");
@@ -114,7 +118,8 @@ export const UserScreen = (props: UserScreenProps) => {
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
             <RecipeCard recipe={recipe} 
             isInUserFeed={true} 
-            onDelete={handleDeletePress}/>
+            onDelete={handleDeletePress}
+            onEdit={handleEditPress}/>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
