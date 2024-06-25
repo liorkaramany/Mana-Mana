@@ -3,12 +3,15 @@ import {
   addDoc,
   average,
   collection,
+  deleteDoc,
   doc,
   getAggregateFromServer,
   getDoc,
   getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
