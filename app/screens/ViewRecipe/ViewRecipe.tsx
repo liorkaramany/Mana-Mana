@@ -38,6 +38,7 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
     findById: findRecipeById,
     findRecipeRating,
     rate,
+    deleteRecipe,
   } = RecipeViewModel();
 
   const {
@@ -100,7 +101,22 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
     navigation.navigate("EditRecipe", { recipeId });
   };
 
-  const handleDeletePress = async () => {};
+  const handleDeletePress = async () => {
+    if (!recipeId) {
+      console.log("Missing recipe ID for deletion.");
+      return;
+    }
+  
+    try {
+      await deleteRecipe(recipeId);
+  
+      console.log("Recipe deleted successfully!");
+      navigation.goBack(); // Navigate back after successful deletion
+    } catch (error) {
+      console.log("Error deleting recipe:", error);
+    }
+  };
+  
 
   const handleRating = async (ratingValue: number) => {
     const showErrorToast = () => {
