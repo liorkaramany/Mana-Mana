@@ -11,6 +11,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
+import { UserDetails } from "@/app/models/user";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -52,6 +53,11 @@ export const HomeScreen = (props: HomeScreenProps) => {
     navigation.navigate("ViewRecipe", { recipeId: recipe.id });
   };
 
+  const navigateToUser = (user: UserDetails) => {
+    console.log("user id here:" + user);
+    navigation.navigate("User", { userId: user.id });
+  };
+
   return (
     <View style={styles.container}>
       <AppTextInput
@@ -69,7 +75,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
         data={filteredRecipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
-            <RecipeCard recipe={recipe} />
+            <RecipeCard recipe={recipe} isInUserFeed={false} onUserPressed={navigateToUser} />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
