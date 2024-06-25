@@ -3,12 +3,15 @@ import {
   addDoc,
   average,
   collection,
+  deleteDoc,
   doc,
   getAggregateFromServer,
   getDoc,
   getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
@@ -195,6 +198,24 @@ const updateRecipeRating = async (
   return recipeRatingSnap.data();
 };
 
+const findUserRecipes = async (userId: string): Promise<Recipe[]> => {
+  const recipesQuery = query(recipesCollection, where("author", "==", userId));
+  const querySnapshot = await getDocs(recipesQuery);
+  return querySnapshot.docs.map((document) => document.data() as Recipe);
+};
+
+const deleteRecipeModel = async (id: string): Promise<void> => {
+  const recipeReference = doc(db, "recipes", id);
+
+  try {
+    await deleteDoc(recipeReference);
+    console.log("Recipe deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting recipe:", error);
+    throw error; // Re-throw the error for handling in your components
+  }
+};
+
 export {
   averageRecipeRating,
   createRecipe,
@@ -204,4 +225,6 @@ export {
   rateRecipe,
   updateRecipe,
   updateRecipeRating,
+  findUserRecipes,
+  deleteRecipeModel
 };
