@@ -50,6 +50,10 @@ export const HomeScreen = (props: HomeScreenProps) => {
     recipe.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleEditPress = (recipeId: string) => {
+    navigation.navigate("EditRecipe", { recipeId });
+  };
+
   const handleDeletePress = (recipeId: string) => {
     if (!recipeId) {
       console.log("Missing recipe ID for deletion.");
@@ -94,7 +98,8 @@ export const HomeScreen = (props: HomeScreenProps) => {
             <RecipeCard recipe={recipe} 
             isInUserFeed={false} 
             onUserPressed={navigateToUser} 
-            onDelete={handleDeletePress}/>
+            onDelete={handleDeletePress}
+            onEdit={handleEditPress}/>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}

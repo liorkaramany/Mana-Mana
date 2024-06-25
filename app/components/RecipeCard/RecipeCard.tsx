@@ -15,7 +15,7 @@ export type RecipeCardProps = Pick<
   "radius" | "imageResizeMode" | "style" | "imageStyle" | "contentStyle"
 > & {
   recipe: FullRecipe;
-  onEdit?: () => void;
+  onEdit?: (recipeId: string) => void;
   onDelete?: (recipeId: string) => void;
   isInUserFeed?: boolean;
   onUserPressed?: (user: UserDetails) => void;
@@ -44,7 +44,7 @@ export const RecipeCard = (props: RecipeCardProps) => {
           {currentUser?.uid == recipe.author.id && (
             <View style={styles.actionButtons}>
               <AppButton
-                onPress={onEdit}
+                onPress={() => onEdit && onEdit(recipe.id)}
                 variant="neutral"
                 size="sm"
                 style={styles.actionButton}
