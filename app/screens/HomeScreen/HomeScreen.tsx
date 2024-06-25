@@ -75,7 +75,11 @@ export const HomeScreen = (props: HomeScreenProps) => {
         data={filteredRecipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
-            <RecipeCard recipe={recipe} isInUserFeed={false} onUserPressed={navigateToUser} />
+            <RecipeCard
+              recipe={recipe}
+              isInUserFeed={false}
+              onUserPressed={navigateToUser}
+            />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
