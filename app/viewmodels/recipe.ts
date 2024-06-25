@@ -9,7 +9,6 @@ import {
   rateRecipe,
   updateRecipe,
   findUserRecipes,
-  deleteRecipe,
   deleteRecipeModel
 } from "../models/recipe";
 
