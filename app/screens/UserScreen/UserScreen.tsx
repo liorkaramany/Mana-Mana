@@ -1,6 +1,6 @@
 import { AppText } from "@/app/components/AppText";
 import { RecipeCard } from "@/app/components/RecipeCard";
-import { FullRecipe } from "@/app/models/recipe";
+import { FullRecipe, findUserRecipes } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -9,43 +9,28 @@ import { FlatList, TouchableOpacity, View, Image } from "react-native";
 import { styles } from "./styles";
 import { UserViewModel } from "@/app/viewmodels/user";
 import { UserDetails, findUserDetailsById } from "@/app/models/user";
+import { useAsync } from "@/app/hooks/useAsync";
 
 export type UserScreenProps = NativeStackScreenProps<StackParamList, "User">;
-
-export const useUserViewModel = (userId: string) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await findUserDetailsById(userId);
-        setUser(userData);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [userId]);
-
-  return { user, loading, error };
-};
 
 export const UserScreen = (props: UserScreenProps) => {
   const { navigation, route } = props;
   const { userId } = route.params;
   
-  const { user, loading: userLoading, error: userError } = useUserViewModel(userId);
+  const {
+    loading: userLoading,
+    error: userError,
+    response: user,
+  } = useAsync({ action: async () => await findUserDetailsById(userId) });
 
   const {
-    recipes,
-    loading,
-    error,
-    refetch: refetchRecipes,
+    loading: loading,
+    error: error,
+    response: recipes,
+    refetch: refetchRecipes
+  } = useAsync({ action: async () => await findUserRecipes(userId) });
+
+  const {
     deleteRecipe
   } = RecipeViewModel();
 
@@ -75,31 +60,28 @@ export const UserScreen = (props: UserScreenProps) => {
     );
   }
 
-  const filteredRecipes = recipes.filter((recipe) =>
-    recipe.author.id == userId
-  );
-
   const handleEditPress = (recipeId: string) => {
     navigation.navigate("EditRecipe", { recipeId });
   };
 
-  const handleDeletePress = (recipeId: string) => {
+  const handleDeletePress = async (recipeId: string) => {
     if (!recipeId) {
       console.log("Missing recipe ID for deletion.");
       return;
     }
   
     try {
-      deleteRecipe(recipeId);
-      refetchRecipes();
+      await deleteRecipe(recipeId);
       console.log("Recipe deleted successfully!");
+
+      refetchRecipes();
     } catch (error) {
       console.log("Error deleting recipe:", error);
     }
   };
 
   const navigateToRecipe = (recipe: FullRecipe) => {
-    navigation.navigate("ViewRecipe", { recipeId: recipe.id });
+    navigation.navigate("ViewRecipe", { recipeId: recipe.id, userId: recipe.author.id });
   };
 
   return (
@@ -113,7 +95,7 @@ export const UserScreen = (props: UserScreenProps) => {
         onRefresh={refetchRecipes}
         style={styles.recipesList}
         contentContainerStyle={styles.recipesListItem}
-        data={filteredRecipes}
+        data={recipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
             <RecipeCard recipe={recipe} 
