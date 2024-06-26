@@ -3,7 +3,7 @@ import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
 import { RecipeCard } from "@/app/components/RecipeCard";
 import { Colors } from "@/app/config/Colors";
-import { FullRecipe } from "@/app/models/recipe";
+import { FullRecipe, findRecipes } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import Feather from "@expo/vector-icons/Feather";
@@ -12,6 +12,7 @@ import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 import { UserDetails } from "@/app/models/user";
+import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -21,12 +22,18 @@ export const HomeScreen = (props: HomeScreenProps) => {
   const [search, setSearch] = useState<string>("");
 
   const {
-    recipes,
-    loading,
-    error,
-    refetch: refetchRecipes,
     deleteRecipe
   } = RecipeViewModel();
+
+  const {
+    loading: loading,
+    response: recipes,
+    error,
+    refetch: refetchRecipes
+  } = useAsyncFocused({
+    action: () => findRecipes(),
+    dependencies: [],
+  });
 
   if (loading) {
     return (
@@ -54,20 +61,22 @@ export const HomeScreen = (props: HomeScreenProps) => {
     navigation.navigate("EditRecipe", { recipeId });
   };
 
-  const handleDeletePress = (recipeId: string) => {
+  const handleDeletePress = async (recipeId: string) => {
     if (!recipeId) {
-      console.log("Missing recipe ID for deletion.");
+      console.error("Missing recipe ID for deletion.");
       return;
     }
   
     try {
-      deleteRecipe(recipeId);
-      refetchRecipes();
+      await deleteRecipe(recipeId);
       console.log("Recipe deleted successfully!");
+
+      refetchRecipes();
     } catch (error) {
-      console.log("Error deleting recipe:", error);
+      console.error("Error deleting recipe:", error);
     }
   };
+  
 
   const navigateToRecipe = (recipe: FullRecipe) => {
     navigation.navigate("ViewRecipe", { recipeId: recipe.id });
