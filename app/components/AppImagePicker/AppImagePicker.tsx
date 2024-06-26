@@ -1,7 +1,7 @@
 import { Radius } from "@/app/config/Radius";
 import Feather from "@expo/vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   Image,
   ImageResizeMode,
@@ -19,6 +19,8 @@ export type AppImagePickerProps = {
   resizeMode?: ImageResizeMode;
   disabled?: boolean;
   radius?: keyof typeof Radius;
+  renderNoPermission?: ReactNode;
+  renderUploadImage?: ReactNode;
   style?: StyleProp<ViewStyle>;
   removeButtonStyle?: StyleProp<ViewStyle>;
 };
@@ -30,6 +32,8 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
     resizeMode = "cover",
     disabled = false,
     radius = "md",
+    renderNoPermission,
+    renderUploadImage,
     style,
     removeButtonStyle,
   } = props;
@@ -52,55 +56,63 @@ export const AppImagePicker = (props: AppImagePickerProps) => {
   };
 
   return (
-    <View style={[stylesWithParameters.container, style]}>
-      {!status?.granted ? (
-        <AppButton
-          disabled={disabled}
-          onPress={requestPermission}
-          variant="neutral"
-          radius="no"
-          title={
-            <View style={stylesWithParameters.grantPermissionButtonContent}>
-              <Feather name="image" size={24} />
-              <AppText
-                type="defaultSemiBold"
-                style={stylesWithParameters.grantPermissionButtonContentText}
-              >
-                No camera permission granted{"\n"}press to grant or grant
-                through the settings
-              </AppText>
-            </View>
-          }
-          style={stylesWithParameters.uploadImageButton}
-        />
-      ) : (
-        <AppButton
-          disabled={disabled}
-          onPress={selectImage}
-          variant="neutral"
-          radius="no"
-          title={
-            finalImageUri != null ? (
-              <Image
-                resizeMode={resizeMode}
-                source={{ uri: finalImageUri }}
-                style={stylesWithParameters.image}
-              />
-            ) : (
-              <View style={stylesWithParameters.uploadImageButtonContent}>
-                <Feather name="upload" size={24} />
-                <AppText
-                  type="defaultSemiBold"
-                  style={stylesWithParameters.uploadImageButtonContentText}
-                >
-                  Upload an image
-                </AppText>
-              </View>
-            )
-          }
-          style={stylesWithParameters.uploadImageButton}
-        />
-      )}
+    <View style={stylesWithParameters.wrapper}>
+      <View style={[stylesWithParameters.container, style]}>
+        {!status?.granted ? (
+          <AppButton
+            disabled={disabled}
+            onPress={requestPermission}
+            variant="neutral"
+            radius="no"
+            title={
+              renderNoPermission ?? (
+                <View style={stylesWithParameters.grantPermissionButtonContent}>
+                  <Feather name="image" size={24} />
+                  <AppText
+                    type="defaultSemiBold"
+                    style={
+                      stylesWithParameters.grantPermissionButtonContentText
+                    }
+                  >
+                    No camera permission granted{"\n"}press to grant or grant
+                    through the settings
+                  </AppText>
+                </View>
+              )
+            }
+            style={stylesWithParameters.uploadImageButton}
+          />
+        ) : (
+          <AppButton
+            disabled={disabled}
+            onPress={selectImage}
+            variant="neutral"
+            radius="no"
+            title={
+              finalImageUri != null ? (
+                <Image
+                  resizeMode={resizeMode}
+                  source={{ uri: finalImageUri }}
+                  style={stylesWithParameters.image}
+                />
+              ) : (
+                renderUploadImage ?? (
+                  <View style={stylesWithParameters.uploadImageButtonContent}>
+                    <Feather name="upload" size={24} />
+                    <AppText
+                      type="defaultSemiBold"
+                      style={stylesWithParameters.uploadImageButtonContentText}
+                    >
+                      Upload an image
+                    </AppText>
+                  </View>
+                )
+              )
+            }
+            style={stylesWithParameters.uploadImageButton}
+          />
+        )}
+      </View>
       {status?.granted && finalImageUri != null && (
         <AppButton
           disabled={disabled}

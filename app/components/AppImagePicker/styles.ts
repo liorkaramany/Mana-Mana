@@ -8,6 +8,7 @@ export type StylesProps = {
 
 export const styles = (props: StylesProps) => {
   return StyleSheet.create({
+    wrapper: { position: "relative" },
     container: {
       backgroundColor: Colors.white,
       aspectRatio: 4 / 3,
@@ -16,7 +17,6 @@ export const styles = (props: StylesProps) => {
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      position: "relative",
     },
     uploadImageButton: {
       paddingHorizontal: 0,

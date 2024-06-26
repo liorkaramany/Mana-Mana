@@ -9,7 +9,7 @@ import {
   rateRecipe,
   updateRecipe,
   findUserRecipes,
-  deleteRecipeModel
+  deleteRecipeModel,
 } from "../models/recipe";
 
 export const RecipeViewModel = () => {
@@ -35,12 +35,11 @@ export const RecipeViewModel = () => {
   const findRecipeRating = async (id: string, userId: string) =>
     await findRecipeRatingModel(id, userId);
 
-  const userRecipes = async (userId: string) =>
-    await findUserRecipes(userId)
+  const userRecipes = async (userId: string) => await findUserRecipes(userId);
 
   const deleteRecipe = async (id: string) => {
     await deleteRecipeModel(id);
-  }
+  };
 
   return {
     recipes,
@@ -53,6 +52,6 @@ export const RecipeViewModel = () => {
     rate,
     findRecipeRating,
     userRecipes,
-    deleteRecipe
+    deleteRecipe,
   };
 };
