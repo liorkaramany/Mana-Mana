@@ -11,6 +11,7 @@ export type UseAsyncFocusedParametersReturnValue<Response> = {
   loading: boolean;
   response?: Response;
   error?: Error;
+  refetch: () => void;
 };
 
 export const useAsyncFocused = <Response>(
@@ -22,39 +23,34 @@ export const useAsyncFocused = <Response>(
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error>();
 
-  const callback = useCallback(() => {
-    let isActive = true;
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    setError(undefined);
 
-    const fetch = async () => {
-      if (isActive) {
-        setLoading(true);
-      }
-
-      try {
-        const response = await action();
-        if (isActive) {
-          setResponse(response);
-        }
-      } catch (error) {
-        if (isActive) {
-          setError(error as Error);
-          onError?.(error as Error);
-        }
-      } finally {
-        if (isActive) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetch();
-
-    return () => {
-      isActive = false;
-    };
+    try {
+      const response = await action();
+      setResponse(response);
+    } catch (error) {
+      setError(error as Error);
+      onError?.(error as Error);
+    } finally {
+      setLoading(false);
+    }
   }, dependencies);
 
-  useFocusEffect(callback);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
 
-  return { response, loading, error };
+      if (isActive) {
+        fetch();
+      }
+
+      return () => {
+        isActive = false;
+      };
+    }, [fetch])
+  );
+
+  return { response, loading, error, refetch: fetch };
 };
