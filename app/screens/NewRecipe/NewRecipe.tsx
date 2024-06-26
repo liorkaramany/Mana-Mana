@@ -57,6 +57,7 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
         navigation.dispatch(
           StackActions.replace("ViewRecipe", {
             recipeId: newRecipeId,
+            userId: currentUser.uid,
           })
         );
       } catch (error) {
