@@ -1,16 +1,26 @@
-import { User } from "@/app/models/user";
 import { Image, View } from "react-native";
 import { AppText } from "../AppText";
 import { styles } from "./styles";
 
-export type UserWithAvatarProps = User;
+export type UserWithAvatarProps = {
+  image?: string | null;
+  name: string;
+};
 
 export const UserWithAvatar = (props: UserWithAvatarProps) => {
-  const { image, name } = props;
+  const { image = null, name } = props;
 
   return (
     <View style={styles.container}>
-      <Image resizeMode="cover" style={styles.image} source={{ uri: image }} />
+      <Image
+        resizeMode="cover"
+        style={styles.image}
+        source={
+          image == null
+            ? require("@/app/assets/images/default-user-icon.png")
+            : { uri: image }
+        }
+      />
       <AppText type="title" style={styles.name}>
         {name}
       </AppText>

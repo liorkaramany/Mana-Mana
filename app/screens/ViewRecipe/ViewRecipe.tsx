@@ -59,13 +59,6 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
         : findRecipeRating(recipeId, currentUser.uid),
     dependencies: [recipeId, currentUser?.uid],
     onError: (error) => {
-      console.log(
-        `Error: ViewRecipe > findRecipeRating(${recipeId}, ${
-          currentUser!.uid
-        }):`,
-        error
-      );
-
       if (!(error instanceof RecipeRatingNotFoundError)) {
         Toast.show({
           type: "error",
@@ -73,6 +66,19 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
           text2:
             "There was a problem getting your up to date rating of the recipe.",
         });
+        console.log(
+          `Error: ViewRecipe > findRecipeRating(${recipeId}, ${
+            currentUser!.uid
+          }):`,
+          error
+        );
+      } else {
+        console.log(
+          `No rating found: ViewRecipe > findRecipeRating(${recipeId}, ${
+            currentUser!.uid
+          }):`,
+          error
+        );
       }
     },
   });
@@ -106,17 +112,16 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
       console.log("Missing recipe ID for deletion.");
       return;
     }
-  
+
     try {
       await deleteRecipe(recipeId);
-  
+
       console.log("Recipe deleted successfully!");
       navigation.goBack(); // Navigate back after successful deletion
     } catch (error) {
       console.log("Error deleting recipe:", error);
     }
   };
-  
 
   const handleRating = async (ratingValue: number) => {
     const showErrorToast = () => {
