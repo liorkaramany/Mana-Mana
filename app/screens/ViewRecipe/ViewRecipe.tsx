@@ -59,7 +59,14 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
         : findRecipeRating(recipeId, currentUser.uid),
     dependencies: [recipeId, currentUser?.uid],
     onError: (error) => {
-      if (!(error instanceof RecipeRatingNotFoundError)) {
+      if (error instanceof RecipeRatingNotFoundError) {
+        console.log(
+          `No rating found: ViewRecipe > findRecipeRating(${recipeId}, ${
+            currentUser!.uid
+          }):`,
+          error
+        );
+      } else {
         Toast.show({
           type: "error",
           text1: "Oh no!",
@@ -68,13 +75,6 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
         });
         console.log(
           `Error: ViewRecipe > findRecipeRating(${recipeId}, ${
-            currentUser!.uid
-          }):`,
-          error
-        );
-      } else {
-        console.log(
-          `No rating found: ViewRecipe > findRecipeRating(${recipeId}, ${
             currentUser!.uid
           }):`,
           error
