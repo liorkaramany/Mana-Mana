@@ -71,7 +71,7 @@ export const UserScreen = (props: UserScreenProps) => {
       await deleteRecipe(recipeId);
       console.log("Recipe deleted successfully!");
 
-      refetchRecipes();
+      await refetchRecipes();
     } catch (error) {
       console.log("Error deleting recipe:", error);
     }
