@@ -222,15 +222,9 @@ const findUserRecipes = async (userId: string): Promise<FullRecipe[]> => {
 };
 
 const deleteRecipeModel = async (id: string): Promise<void> => {
-  const recipeReference = doc(db, "recipes", id);
+  const recipeReference = (await findRecipeDocumentSnapById(id)).ref;
 
-  try {
-    await deleteDoc(recipeReference);
-    console.log("Recipe deleted successfully!");
-  } catch (error) {
-    console.error("Error deleting recipe:", error);
-    throw error; // Re-throw the error for handling in your components
-  }
+  await deleteDoc(recipeReference);
 };
 
 export {
