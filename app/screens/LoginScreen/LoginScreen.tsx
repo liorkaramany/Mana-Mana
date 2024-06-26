@@ -22,6 +22,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const { signIn, signUp } = UserViewModel();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -54,12 +55,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
 
   const handleSignup = async () => {
     try {
-      const userCredential = await signUp(
-        email,
-        password,
-        // TODO: Fill in the details
-        {} as UserDetailsWithoutEmail
-      );
+      const userCredential = await signUp(email, password);
       setError(null); // Clear any previous errors
       console.log("User signed up:", userCredential.user);
 

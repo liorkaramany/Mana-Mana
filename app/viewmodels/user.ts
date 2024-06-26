@@ -36,11 +36,8 @@ export const UserViewModel = () => {
     return unsubscribe;
   }, []);
 
-  const signUp = async (
-    email: string,
-    password: string,
-    userDetails: UserDetailsWithoutEmail
-  ) => await signUpUser(email, password, userDetails);
+  const signUp = async (email: string, password: string) =>
+    await signUpUser(email, password);
 
   const signIn = async (email: string, password: string) =>
     await signInUser(email, password);
