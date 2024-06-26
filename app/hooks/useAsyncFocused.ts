@@ -11,7 +11,7 @@ export type UseAsyncFocusedParametersReturnValue<Response> = {
   loading: boolean;
   response?: Response;
   error?: Error;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 };
 
 export const useAsyncFocused = <Response>(
