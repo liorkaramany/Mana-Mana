@@ -93,7 +93,7 @@ export default function App() {
           title: "Mana Mana",
           contentStyle: { backgroundColor: Colors.background },
           headerRight: () => (
-            <View style={{flexDirection: "row", marginHorizontal: 16}}>
+            <View style={{flexDirection: "row"}}>
               {route.name == "ViewRecipe" && route.params?.userId == currentUser?.uid && (
                 <>
                   <MyRecipeOptionsMenu
