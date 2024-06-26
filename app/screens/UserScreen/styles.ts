@@ -11,7 +11,9 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     gap: 16,
+    height: 100,
   },
+  editableUserDetailsLoadingOverlay: { width: "100%" },
   editableUserDetails: { flex: 1 },
   editUserDetails: {
     aspectRatio: 1,
