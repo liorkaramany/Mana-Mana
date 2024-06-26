@@ -4,6 +4,13 @@ export const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row",
+    gap: 16,
+    justifyContent: "space-between",
+  },
+  inputs: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
     gap: 20,
   },
   profileImage: {
@@ -15,5 +22,13 @@ export const styles = StyleSheet.create({
   name: {
     alignSelf: "flex-start",
     flex: 1,
+  },
+  actionsContainer: { justifyContent: "space-between" },
+  actionButton: {
+    width: 48,
+    aspectRatio: 1,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 100,
   },
 });

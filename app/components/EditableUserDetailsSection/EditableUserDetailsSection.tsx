@@ -1,10 +1,11 @@
 import { UserDetails } from "@/app/models/user";
+import Feather from "@expo/vector-icons/Feather";
 import { useState } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
-import { styles } from "./styles";
+import { AppButton } from "../AppButton";
 import { AppImagePicker } from "../AppImagePicker";
 import { AppTextInput } from "../AppTextInput";
-import Feather from "@expo/vector-icons/Feather";
+import { styles } from "./styles";
 
 export type EditableUserDetailsSectionValue = Pick<
   UserDetails,
@@ -13,7 +14,10 @@ export type EditableUserDetailsSectionValue = Pick<
 
 export type EditableUserDetailsSectionProps = {
   userDetails?: EditableUserDetailsSectionValue;
+  defaultUserDetails?: EditableUserDetailsSectionValue;
   onUserDetailsChange?: (userDetails: EditableUserDetailsSectionValue) => void;
+  onConfirm?: (userDetails: EditableUserDetailsSectionValue) => void;
+  onCancel?: () => void;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -25,38 +29,61 @@ const DEFAULT_USER_DETAILS: EditableUserDetailsSectionValue = {
 export const EditableUserDetailsSection = (
   props: EditableUserDetailsSectionProps
 ) => {
-  const { userDetails, onUserDetailsChange, style } = props;
+  const {
+    userDetails,
+    onUserDetailsChange,
+    defaultUserDetails = DEFAULT_USER_DETAILS,
+    onConfirm,
+    onCancel,
+    style,
+  } = props;
 
   const [innerUserDetails, setInnerUserDetails] =
-    useState<EditableUserDetailsSectionValue>(DEFAULT_USER_DETAILS);
+    useState<EditableUserDetailsSectionValue>(defaultUserDetails);
 
   const finalUserDetails = userDetails ?? innerUserDetails;
   const finalOnUserDetailsChange = onUserDetailsChange ?? setInnerUserDetails;
 
   return (
     <View style={[styles.container, style]}>
-      <AppImagePicker
-        renderNoPermission={<Feather name="camera-off" size={28} />}
-        renderUploadImage={<Feather name="upload" size={28} />}
-        onChangeImageUri={(imageUri) =>
-          finalOnUserDetailsChange({
-            ...finalUserDetails,
-            image: imageUri ?? null,
-          })
-        }
-        imageUri={finalUserDetails.image ?? undefined}
-        style={styles.profileImage}
-        removeButtonStyle={styles.removeProfileImageButton}
-      />
-      <AppTextInput
-        placeholder="Who are you?"
-        size="lg"
-        value={finalUserDetails.name}
-        onChangeText={(name) =>
-          finalOnUserDetailsChange({ ...finalUserDetails, name })
-        }
-        style={styles.name}
-      />
+      <View style={styles.inputs}>
+        <AppImagePicker
+          renderNoPermission={<Feather name="camera-off" size={28} />}
+          renderUploadImage={<Feather name="upload" size={28} />}
+          onChangeImageUri={(imageUri) =>
+            finalOnUserDetailsChange({
+              ...finalUserDetails,
+              image: imageUri ?? null,
+            })
+          }
+          imageUri={finalUserDetails.image ?? undefined}
+          style={styles.profileImage}
+          removeButtonStyle={styles.removeProfileImageButton}
+        />
+        <AppTextInput
+          placeholder="Who are you?"
+          size="lg"
+          value={finalUserDetails.name}
+          onChangeText={(name) =>
+            finalOnUserDetailsChange({ ...finalUserDetails, name })
+          }
+          style={styles.name}
+        />
+      </View>
+      <View style={styles.actionsContainer}>
+        <AppButton
+          onPress={() => onConfirm?.(finalUserDetails)}
+          variant="neutral"
+          style={styles.actionButton}
+          title={<Feather name="check" size={20} />}
+        />
+        <AppButton
+          onPress={onCancel}
+          variant="neutral"
+          style={styles.actionButton}
+          title={<Feather name="x" size={20} />}
+        />
+      </View>
     </View>
   );
 };
