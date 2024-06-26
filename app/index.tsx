@@ -27,6 +27,8 @@ SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
+  const { currentUser } = UserViewModel();
+
   const [loaded] = useFonts({
     SpaceMono: require("./assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -56,6 +58,10 @@ export default function App() {
     });
   };
 
+  const navigateToMyUser = (navigation: NativeStackNavigationProp<StackParamList>) => {
+    navigation.navigate("User", { userId: currentUser?.uid!! })
+  }
+
   return (
     <>
       <Stack.Navigator
@@ -68,6 +74,7 @@ export default function App() {
                 <>
                   <HeaderOptionsMenu
                     onSignOut={() => setSignOutModalVisible(true)}
+                    onMyAccount={() => navigateToMyUser(navigation)}
                   />
                   <SignOutModal
                     visible={signOutModalVisible}

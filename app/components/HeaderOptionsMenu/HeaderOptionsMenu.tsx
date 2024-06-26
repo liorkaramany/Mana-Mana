@@ -7,10 +7,11 @@ import { useRef, useState } from "react";
 
 export type HeaderOptionsMenuProps = {
   onSignOut?: () => void;
+  onMyAccount?: () => void;
 };
 
 export const HeaderOptionsMenu = (props: HeaderOptionsMenuProps) => {
-  const { onSignOut } = props;
+  const { onSignOut, onMyAccount } = props;
 
   const touchable = useRef(null);
   const [showPopover, setShowPopover] = useState<boolean>(false);
@@ -34,6 +35,15 @@ export const HeaderOptionsMenu = (props: HeaderOptionsMenuProps) => {
           style={styles.option}
         >
           <AppText>Sign out</AppText>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setShowPopover(false);
+            onMyAccount?.();
+          }}
+          style={styles.option}
+        >
+          <AppText>My Account</AppText>
         </TouchableOpacity>
       </Popover>
     </>
