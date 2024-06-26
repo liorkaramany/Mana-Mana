@@ -40,7 +40,7 @@ const signUpUser = async (
   await setDoc(doc(usersCollection, userCredential.user.uid), {
     ...userDetails,
     id: userCredential.user.uid,
-    name: email,
+    name: email.match(/^([^@]*)@/)?.[1] ?? email,
     image: null,
     email,
   } satisfies UserDetails);
