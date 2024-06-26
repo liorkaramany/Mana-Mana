@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { auth } from "../firebase";
 import {
   UserDetails,
-  UserDetailsWithoutEmail,
   findUserDetailsById,
   signInUser,
   signOutUser,
