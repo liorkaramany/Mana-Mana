@@ -1,12 +1,13 @@
 import { AppText } from "@/app/components/AppText";
 import { RecipeCard } from "@/app/components/RecipeCard";
+import { UserDetailsSection } from "@/app/components/UserDetailsSection";
 import { useAsync } from "@/app/hooks/useAsync";
 import { FullRecipe, findUserRecipes } from "@/app/models/recipe";
 import { findUserDetailsById } from "@/app/models/user";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { FlatList, Image, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 
 export type UserScreenProps = NativeStackScreenProps<StackParamList, "User">;
@@ -38,10 +39,12 @@ export const UserScreen = (props: UserScreenProps) => {
     );
   }
 
-  if (userError) {
+  if (userError || user == null) {
+    console.log("Error:", userError?.message);
+
     return (
       <View>
-        <AppText>Error loading user data: {userError.message}</AppText>
+        <AppText>Could not get the user.</AppText>
       </View>
     );
   }
@@ -86,15 +89,7 @@ export const UserScreen = (props: UserScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={
-          user?.image == null
-            ? require("@/app/assets/images/default-user-icon.png")
-            : { uri: user.image }
-        }
-        style={styles.profileImage}
-      />
-      <AppText type="heading">{user?.name}</AppText>
+      <UserDetailsSection userDetails={user} />
       <FlatList
         refreshing={loading}
         onRefresh={refetchRecipes}
