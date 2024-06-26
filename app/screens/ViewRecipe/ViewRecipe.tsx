@@ -151,21 +151,8 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <AppText style={styles.title}>{title}</AppText>
-        {currentUser?.uid === author && ( // Check for current user
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={handleEditPress} style={styles.button}>
-              <MaterialCommunityIcons name="pencil" size={30} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleDeletePress} style={styles.button}>
-              <MaterialCommunityIcons name="delete" size={30} color="red" />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
+      <AppText style={styles.title}>{title}</AppText>
       <ScrollView style={styles.content}>
-        {/* Remaining recipe details */}
         <Image source={{ uri: recipe.image }} style={styles.image} />
         <View style={styles.details}>
           <View style={styles.tags}>

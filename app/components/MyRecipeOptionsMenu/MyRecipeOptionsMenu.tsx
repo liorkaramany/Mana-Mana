@@ -1,9 +1,6 @@
 import Feather from "@expo/vector-icons/Feather";
-import { TouchableHighlight, TouchableOpacity } from "react-native";
-import Popover from "react-native-popover-view";
-import { AppText } from "../AppText";
-import { styles } from "./styles";
-import { useRef, useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { useRef } from "react";
 
 export type MyRecipeOptionsMenuProps = {
   recipeId: string;
@@ -17,10 +14,21 @@ export const MyRecipeOptionsMenu = (props: MyRecipeOptionsMenuProps) => {
   const touchable = useRef(null);
 
   return (
-    <>
-      <TouchableOpacity ref={touchable} onPress={() => onEdit(recipeId)}>
-        <Feather name="delete" size={24} />
+    <View style={{ flexDirection: "row" }}>
+      <TouchableOpacity
+        ref={touchable}
+        onPress={() => onDelete && onDelete(recipeId)}
+        style={{ marginRight: 16 }}
+      >
+        <Feather name="trash" size={24} />
       </TouchableOpacity>
-    </>
+      <TouchableOpacity
+        ref={touchable}
+        onPress={() => onEdit && onEdit(recipeId)}
+        style={{ marginRight: 16 }}
+      >
+        <Feather name="edit" size={24} />
+      </TouchableOpacity>
+    </View>
   );
 };
