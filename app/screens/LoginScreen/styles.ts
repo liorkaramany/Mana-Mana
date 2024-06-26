@@ -1,19 +1,20 @@
-import { Colors } from '@/app/config/Colors';
-import { StyleSheet } from 'react-native';
+import { Colors } from "@/app/config/Colors";
+import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  loadingOverlay: { flex: 1 },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.background,
   },
   header: {
     marginBottom: 30,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   form: {
     width: 300,
@@ -23,16 +24,16 @@ const styles = StyleSheet.create({
     margin: 12,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 15,
   },
   forgotPasswordButton: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     marginBottom: 12,
   },
   forgotPasswordText: {
     color: Colors.white,
-    textDecorationLine: 'underline'
+    textDecorationLine: "underline",
   },
   loginButton: {
     backgroundColor: Colors.tint,
@@ -53,17 +54,17 @@ const styles = StyleSheet.create({
   },
   switchText: {
     fontSize: 16,
-    color: Colors.white
+    color: Colors.white,
   },
   switchLink: {
     color: Colors.white,
-    textDecorationLine: 'underline',
-    fontWeight: 'bold',
+    textDecorationLine: "underline",
+    fontWeight: "bold",
   },
   errorText: {
-    color: 'red', // Adjust color as needed
-    fontSize: 12, // Adjust font size as needed
-    marginBottom: 10, // Adjust margin as needed
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
   },
 });
 
