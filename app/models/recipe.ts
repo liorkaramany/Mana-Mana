@@ -198,10 +198,27 @@ const updateRecipeRating = async (
   return recipeRatingSnap.data();
 };
 
-const findUserRecipes = async (userId: string): Promise<Recipe[]> => {
+const findUserRecipes = async (userId: string): Promise<FullRecipe[]> => {
+  const author = await findUserDetailsById(userId);
+
   const recipesQuery = query(recipesCollection, where("author", "==", userId));
   const querySnapshot = await getDocs(recipesQuery);
-  return querySnapshot.docs.map((document) => document.data() as Recipe);
+
+  return await Promise.all(
+    querySnapshot.docs.map(async (document) => {
+      const recipe = document.data();
+      const recipeWithoutAuthor = (({ author, ...rest }) => ({ ...rest }))(
+        recipe
+      );
+
+      return {
+        id: document.id,
+        ...recipeWithoutAuthor,
+        author,
+        rating: await averageRecipeRating(document.id),
+      };
+    })
+  );
 };
 
 const deleteRecipeModel = async (id: string): Promise<void> => {
@@ -226,5 +243,5 @@ export {
   updateRecipe,
   updateRecipeRating,
   findUserRecipes,
-  deleteRecipeModel
+  deleteRecipeModel,
 };
