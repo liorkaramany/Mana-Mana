@@ -20,6 +20,7 @@ import { ViewRecipe } from "./screens/ViewRecipe";
 import { StackParamList } from "./types/navigation";
 import { UserViewModel } from "./viewmodels/user";
 import { StackActions } from "@react-navigation/native";
+import { MyRecipeOptionsMenu } from "./components/MyRecipeOptionsMenu";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -82,6 +83,13 @@ export default function App() {
                     onSignOut={() => handleSignOut(navigation)}
                   />
                 </>
+              )}
+              {route.name == "ViewRecipe" && route.params?.userId == currentUser?.uid && (
+                <MyRecipeOptionsMenu
+                recipeId={route.params?.recipeId}
+                onEdit={() => setSignOutModalVisible(true)}
+                onDelete={() => navigateToMyUser(navigation)}
+              />
               )}
             </>
           ),

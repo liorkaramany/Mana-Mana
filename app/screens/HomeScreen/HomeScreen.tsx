@@ -70,7 +70,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
   };
 
   const navigateToRecipe = (recipe: FullRecipe) => {
-    navigation.navigate("ViewRecipe", { recipeId: recipe.id });
+    navigation.navigate("ViewRecipe", { recipeId: recipe.id, userId: recipe.author.id });
   };
 
   const navigateToUser = (user: UserDetails) => {

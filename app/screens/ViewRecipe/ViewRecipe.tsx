@@ -32,7 +32,7 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
 
   const { currentUser } = UserViewModel();
 
-  const { recipeId } = route.params;
+  const { recipeId, userId } = route.params;
 
   const {
     findById: findRecipeById,
