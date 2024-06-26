@@ -9,6 +9,8 @@ import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
+import { AppButton } from "@/app/components/AppButton";
+import Feather from "@expo/vector-icons/Feather";
 
 export type UserScreenProps = NativeStackScreenProps<StackParamList, "User">;
 
@@ -87,9 +89,19 @@ export const UserScreen = (props: UserScreenProps) => {
     });
   };
 
+  const handleUserDetailsEdit = () => {};
+
   return (
     <View style={styles.container}>
-      <UserDetailsSection userDetails={user} />
+      <View style={styles.header}>
+        <UserDetailsSection userDetails={user} />
+        <AppButton
+          onPress={handleUserDetailsEdit}
+          variant="neutral"
+          title={<Feather name="edit-2" size={20} />}
+          style={styles.editUserDetails}
+        />
+      </View>
       <FlatList
         refreshing={loading}
         onRefresh={refetchRecipes}
