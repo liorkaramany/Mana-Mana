@@ -14,8 +14,6 @@ export type UserDetails = {
   image: string | null;
 };
 
-export type UserDetailsWithoutEmail = Omit<UserDetails, "email">;
-
 export class UserNotFoundError extends Error {
   constructor(id: string) {
     super(`User with id: [ ${id} ] was not found.`);
@@ -26,11 +24,7 @@ const usersConverter = converter<UserDetails>();
 
 const usersCollection = collection(db, "users").withConverter(usersConverter);
 
-const signUpUser = async (
-  email: string,
-  password: string,
-  userDetails: UserDetailsWithoutEmail
-) => {
+const signUpUser = async (email: string, password: string) => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -38,7 +32,6 @@ const signUpUser = async (
   );
 
   await setDoc(doc(usersCollection, userCredential.user.uid), {
-    ...userDetails,
     id: userCredential.user.uid,
     name: email.match(/^([^@]*)@/)?.[1] ?? email,
     image: null,
