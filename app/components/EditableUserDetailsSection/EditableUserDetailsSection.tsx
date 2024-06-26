@@ -44,6 +44,10 @@ export const EditableUserDetailsSection = (
   const finalUserDetails = userDetails ?? innerUserDetails;
   const finalOnUserDetailsChange = onUserDetailsChange ?? setInnerUserDetails;
 
+  const emptyName = finalUserDetails.name.length === 0;
+
+  const confirmDisabled = emptyName;
+
   return (
     <View style={[styles.container, style]}>
       <View style={styles.inputs}>
@@ -72,6 +76,7 @@ export const EditableUserDetailsSection = (
       </View>
       <View style={styles.actionsContainer}>
         <AppButton
+          disabled={confirmDisabled}
           onPress={() => onConfirm?.(finalUserDetails)}
           variant="neutral"
           style={styles.actionButton}
