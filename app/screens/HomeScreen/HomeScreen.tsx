@@ -21,15 +21,13 @@ export const HomeScreen = (props: HomeScreenProps) => {
 
   const [search, setSearch] = useState<string>("");
 
-  const {
-    deleteRecipe
-  } = RecipeViewModel();
+  const { deleteRecipe } = RecipeViewModel();
 
   const {
     loading: loading,
     response: recipes,
     error,
-    refetch: refetchRecipes
+    refetch: refetchRecipes,
   } = useAsyncFocused({
     action: () => findRecipes(),
     dependencies: [],
@@ -66,20 +64,22 @@ export const HomeScreen = (props: HomeScreenProps) => {
       console.error("Missing recipe ID for deletion.");
       return;
     }
-  
+
     try {
       await deleteRecipe(recipeId);
       console.log("Recipe deleted successfully!");
 
-      refetchRecipes();
+      await refetchRecipes();
     } catch (error) {
       console.error("Error deleting recipe:", error);
     }
   };
-  
 
   const navigateToRecipe = (recipe: FullRecipe) => {
-    navigation.navigate("ViewRecipe", { recipeId: recipe.id, userId: recipe.author.id });
+    navigation.navigate("ViewRecipe", {
+      recipeId: recipe.id,
+      userId: recipe.author.id,
+    });
   };
 
   const navigateToUser = (user: UserDetails) => {
@@ -104,11 +104,13 @@ export const HomeScreen = (props: HomeScreenProps) => {
         data={filteredRecipes}
         renderItem={({ item: recipe }) => (
           <TouchableOpacity onPress={() => navigateToRecipe(recipe)}>
-            <RecipeCard recipe={recipe} 
-            isInUserFeed={false} 
-            onUserPressed={navigateToUser} 
-            onDelete={handleDeletePress}
-            onEdit={handleEditPress}/>
+            <RecipeCard
+              recipe={recipe}
+              isInUserFeed={false}
+              onUserPressed={navigateToUser}
+              onDelete={handleDeletePress}
+              onEdit={handleEditPress}
+            />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
