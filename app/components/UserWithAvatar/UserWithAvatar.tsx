@@ -17,7 +17,7 @@ export const UserWithAvatar = (props: UserWithAvatarProps) => {
         style={styles.image}
         source={
           image == null
-            ? require("../../assets/images/default-user-icon.png")
+            ? require("@/app/assets/images/default-user-icon.png")
             : { uri: image }
         }
       />
