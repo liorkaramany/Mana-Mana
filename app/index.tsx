@@ -19,7 +19,10 @@ import { UserScreen } from "./screens/UserScreen";
 import { ViewRecipe } from "./screens/ViewRecipe";
 import { StackParamList } from "./types/navigation";
 import { UserViewModel } from "./viewmodels/user";
-import { StackActions } from "@react-navigation/native";
+import { MyRecipeOptionsMenu } from "./components/MyRecipeOptionsMenu";
+import { DeleteModal } from "./components/DeleteModal";
+import { RecipeViewModel } from "./viewmodels/recipe";
+import { View } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,6 +31,7 @@ const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
   const { currentUser } = UserViewModel();
+  const { deleteRecipe} = RecipeViewModel();
 
   const [loaded] = useFonts({
     SpaceMono: require("./assets/fonts/SpaceMono-Regular.ttf"),
@@ -39,8 +43,8 @@ export default function App() {
     }
   }, [loaded]);
 
-  const [signOutModalVisible, setSignOutModalVisible] =
-    useState<boolean>(false);
+  const [signOutModalVisible, setSignOutModalVisible] = useState<boolean>(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
 
   const { signOut } = UserViewModel();
 
@@ -62,6 +66,26 @@ export default function App() {
     navigation.navigate("User", { userId: currentUser?.uid!! })
   }
 
+  const navigateToEditRecipe = (navigation: NativeStackNavigationProp<StackParamList>, recipeId: string) => {
+    navigation.navigate("EditRecipe", { recipeId: recipeId })
+  }
+
+  const handleDelete = async (navigation: NativeStackNavigationProp<StackParamList>, recipeId: string) => {
+    if (!recipeId) {
+      console.log("Missing recipe ID for deletion.");
+      return;
+    }
+  
+    try {
+      await deleteRecipe(recipeId);
+  
+      console.log("Recipe deleted successfully!");
+      navigation.goBack(); // Navigate back after successful deletion
+    } catch (error) {
+      console.log("Error deleting recipe:", error);
+    }
+  };
+
   return (
     <>
       <Stack.Navigator
@@ -69,7 +93,21 @@ export default function App() {
           title: "Mana Mana",
           contentStyle: { backgroundColor: Colors.background },
           headerRight: () => (
-            <>
+            <View style={{flexDirection: "row", marginHorizontal: 16}}>
+              {route.name == "ViewRecipe" && route.params?.userId == currentUser?.uid && (
+                <>
+                  <MyRecipeOptionsMenu
+                    recipeId={route.params?.recipeId}
+                    onEdit={() => navigateToEditRecipe(navigation, route.params?.recipeId)}
+                    onDelete={() => setDeleteModalVisible(true)}
+                  />
+                  <DeleteModal
+                    visible={deleteModalVisible}
+                    onClose={() => setDeleteModalVisible(false)}
+                    onDelete={() => handleDelete(navigation, route.params?.recipeId)}
+                  />
+                </>
+              )}
               {route.name !== "Login" && (
                 <>
                   <HeaderOptionsMenu
@@ -83,7 +121,7 @@ export default function App() {
                   />
                 </>
               )}
-            </>
+            </View>
           ),
         })}
         initialRouteName="Login"
