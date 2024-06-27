@@ -3,9 +3,18 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import {
+  DocumentReference,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { auth, db, storage } from "../firebase";
 import { converter } from "../firebase/utilities";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { uriToBlob } from "../utilities";
 
 export type UserDetails = {
   id: string;
@@ -65,6 +74,21 @@ const findUserDetailsById = async (id: string): Promise<UserDetails> => {
   return (await findUserSnapById(id)).data();
 };
 
+const updateUserImage = async (
+  userDetailsReference: DocumentReference<UserDetails, UserDetails>,
+  image: string
+) => {
+  const imageReference = ref(
+    storage,
+    `users/images/${userDetailsReference.id}`
+  );
+  const imageBlob = await uriToBlob(image);
+  const result = await uploadBytes(imageReference, imageBlob);
+  const newImage = await getDownloadURL(result.ref);
+
+  await updateDoc(userDetailsReference, { image: newImage });
+};
+
 const updateUser = async (
   id: string,
   userDetails: Partial<UserDetails>
@@ -72,6 +96,10 @@ const updateUser = async (
   const userSnap = await findUserSnapById(id);
 
   await updateDoc(userSnap.ref, userDetails);
+
+  if (userDetails.image != null) {
+    await updateUserImage(userSnap.ref, userDetails.image);
+  }
 };
 
 export { findUserDetailsById, signInUser, signOutUser, signUpUser, updateUser };
