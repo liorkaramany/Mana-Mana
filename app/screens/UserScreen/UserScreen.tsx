@@ -181,6 +181,3 @@ export const UserScreen = (props: UserScreenProps) => {
     </View>
   );
 };
-function getUserDetails(userId: string) {
-  throw new Error("Function not implemented.");
-}
