@@ -3,7 +3,9 @@ import { AppText } from "@/app/components/AppText";
 import { AppTextInput } from "@/app/components/AppTextInput";
 import { RecipeCard } from "@/app/components/RecipeCard";
 import { Colors } from "@/app/config/Colors";
-import { FullRecipe, findRecipes } from "@/app/models/recipe";
+import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
+import { FullRecipe } from "@/app/models/recipe";
+import { UserDetails } from "@/app/models/user";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import Feather from "@expo/vector-icons/Feather";
@@ -11,8 +13,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
-import { UserDetails } from "@/app/models/user";
-import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -21,7 +21,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
 
   const [search, setSearch] = useState<string>("");
 
-  const { deleteRecipe } = RecipeViewModel();
+  const { find: findRecipes, deleteRecipe } = RecipeViewModel();
 
   const {
     loading: loading,
