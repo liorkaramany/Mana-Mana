@@ -135,19 +135,24 @@ export default function App() {
                     />
                   </>
                 )}
-              {route.name !== "Login" && (
-                <>
+              <>
+                <View
+                  style={
+                    route.name === "Login" && styles.headerOptionsMenuLoggedOff
+                  }
+                  pointerEvents={route.name === "Login" ? "none" : undefined}
+                >
                   <HeaderOptionsMenu
                     onSignOut={() => setSignOutModalVisible(true)}
                     onMyAccount={() => navigateToMyUser(navigation)}
                   />
-                  <SignOutModal
-                    visible={signOutModalVisible}
-                    onClose={() => setSignOutModalVisible(false)}
-                    onSignOut={() => handleSignOut(navigation)}
-                  />
-                </>
-              )}
+                </View>
+                <SignOutModal
+                  visible={signOutModalVisible}
+                  onClose={() => setSignOutModalVisible(false)}
+                  onSignOut={() => handleSignOut(navigation)}
+                />
+              </>
             </View>
           ),
         })}

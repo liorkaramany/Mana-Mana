@@ -10,6 +10,8 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { auth } from "../../firebase/firebase";
 import styles from "./styles";
+import { FirebaseError } from "firebase/app";
+import { authErrorToString } from "@/app/firebase/utilities";
 
 type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
@@ -19,6 +21,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repeatedPassword, setRepeatedPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const { signIn, signUp } = UserViewModel();
@@ -36,21 +39,32 @@ export const LoginScreen = (props: LoginScreenProps) => {
   }, []);
 
   const handlePress = () => {
+    setRepeatedPassword("");
     setShowLogin(!showLogin);
   };
 
   const handleLogin = async () => {
     try {
       setLoading(true);
-      const userCredential = await signIn(email, password);
       setError(null); // Clear any previous errors
+      const userCredential = await signIn(email, password);
       console.log("User logged in:", userCredential.user);
 
       // Navigate to home screen
       navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
-      setError((error as Error).message);
-      console.error("Login error:", error);
+      const errorObject = error as Error;
+
+      if (
+        errorObject instanceof FirebaseError &&
+        errorObject.code.startsWith("auth/")
+      ) {
+        setError(authErrorToString(errorObject));
+      } else {
+        setError(errorObject.message);
+      }
+
+      console.log("Login error:", errorObject);
     } finally {
       setLoading(false);
     }
@@ -59,15 +73,30 @@ export const LoginScreen = (props: LoginScreenProps) => {
   const handleSignup = async () => {
     try {
       setLoading(true);
-      const userCredential = await signUp(email, password);
       setError(null); // Clear any previous errors
+
+      if (password !== repeatedPassword) {
+        throw new Error("Password and repeated password don't match");
+      }
+
+      const userCredential = await signUp(email, password);
       console.log("User signed up:", userCredential.user);
 
       // Navigate to home screen
       navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
-      setError((error as Error).message);
-      console.error("Signup error:", error);
+      const errorObject = error as Error;
+
+      if (
+        errorObject instanceof FirebaseError &&
+        errorObject.code.startsWith("auth/")
+      ) {
+        setError(authErrorToString(errorObject));
+      } else {
+        setError(errorObject.message);
+      }
+
+      console.log("Signup error:", errorObject);
     } finally {
       setLoading(false);
     }
@@ -130,6 +159,8 @@ export const LoginScreen = (props: LoginScreenProps) => {
                 style={styles.input}
                 placeholder="Repeat Password"
                 secureTextEntry={true}
+                value={repeatedPassword}
+                onChangeText={setRepeatedPassword}
               />
               {error && <Text style={styles.errorText}>{error}</Text>}
               <AppButton
