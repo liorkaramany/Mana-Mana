@@ -42,15 +42,15 @@ export const LoginScreen = (props: LoginScreenProps) => {
   const handleLogin = async () => {
     try {
       setLoading(true);
-      const userCredential = await signIn(email, password);
       setError(null); // Clear any previous errors
+      const userCredential = await signIn(email, password);
       console.log("User logged in:", userCredential.user);
 
       // Navigate to home screen
       navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
       setError((error as Error).message);
-      console.error("Login error:", error);
+      console.log("Login error:", error);
     } finally {
       setLoading(false);
     }
@@ -59,15 +59,15 @@ export const LoginScreen = (props: LoginScreenProps) => {
   const handleSignup = async () => {
     try {
       setLoading(true);
-      const userCredential = await signUp(email, password);
       setError(null); // Clear any previous errors
+      const userCredential = await signUp(email, password);
       console.log("User signed up:", userCredential.user);
 
       // Navigate to home screen
       navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
       setError((error as Error).message);
-      console.error("Signup error:", error);
+      console.log("Signup error:", error);
     } finally {
       setLoading(false);
     }

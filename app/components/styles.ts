@@ -8,4 +8,7 @@ export const styles = StyleSheet.create({
   contentStyle: {
     backgroundColor: Colors.background,
   },
+  headerOptionsMenuLoggedOff: {
+    opacity: 0,
+  },
 });
