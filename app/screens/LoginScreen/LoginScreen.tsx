@@ -10,6 +10,8 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { auth } from "../../firebase/firebase";
 import styles from "./styles";
+import { FirebaseError } from "firebase/app";
+import { authErrorToString } from "@/app/firebase/utilities";
 
 type LoginScreenProps = NativeStackScreenProps<StackParamList, "Login">;
 
@@ -49,8 +51,18 @@ export const LoginScreen = (props: LoginScreenProps) => {
       // Navigate to home screen
       navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
-      setError((error as Error).message);
-      console.log("Login error:", error);
+      const errorObject = error as Error;
+
+      if (
+        errorObject instanceof FirebaseError &&
+        errorObject.code.startsWith("auth/")
+      ) {
+        setError(authErrorToString(errorObject));
+      } else {
+        setError(errorObject.message);
+      }
+
+      console.log("Login error:", errorObject);
     } finally {
       setLoading(false);
     }
@@ -66,8 +78,18 @@ export const LoginScreen = (props: LoginScreenProps) => {
       // Navigate to home screen
       navigation.dispatch(StackActions.replace("Home"));
     } catch (error) {
-      setError((error as Error).message);
-      console.log("Signup error:", error);
+      const errorObject = error as Error;
+
+      if (
+        errorObject instanceof FirebaseError &&
+        errorObject.code.startsWith("auth/")
+      ) {
+        setError(authErrorToString(errorObject));
+      } else {
+        setError(errorObject.message);
+      }
+
+      console.log("Signup error:", errorObject);
     } finally {
       setLoading(false);
     }
