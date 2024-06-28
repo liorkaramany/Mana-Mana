@@ -25,10 +25,12 @@ import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 export type ViewRecipeProps = NativeStackScreenProps<
   StackParamList,
   "ViewRecipe"
->;
+> & {
+  deletingRecipe?: boolean;
+};
 
 export const ViewRecipe = (props: ViewRecipeProps) => {
-  const { navigation, route } = props;
+  const { navigation, route, deletingRecipe = false } = props;
 
   const { currentUser } = UserViewModel();
 
@@ -156,60 +158,65 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AppText style={styles.title}>{title}</AppText>
-      <ScrollView style={styles.content}>
-        <Image source={{ uri: recipe.image }} style={styles.image} />
-        <View style={styles.details}>
-          <View style={styles.tags}>
-            {tags &&
-              tags.map((tag, index) => (
-                <AppText key={index} style={styles.tag}>
-                  {tag}
-                </AppText>
-              ))}
+      <AppLoadingOverlay
+        loading={deletingRecipe}
+        style={styles.containerLoadingOverlay}
+      >
+        <AppText style={styles.title}>{title}</AppText>
+        <ScrollView style={styles.content}>
+          <Image source={{ uri: recipe.image }} style={styles.image} />
+          <View style={styles.details}>
+            <View style={styles.tags}>
+              {tags &&
+                tags.map((tag, index) => (
+                  <AppText key={index} style={styles.tag}>
+                    {tag}
+                  </AppText>
+                ))}
+            </View>
+            <AppText style={styles.heading}>Ingredients:</AppText>
+            {ingredients && (
+              <View style={styles.ingredients}>
+                {ingredients.map((ingredient, index) => (
+                  <AppText key={index} style={styles.ingredient}>
+                    {ingredient.name} - {ingredient.amount}
+                  </AppText>
+                ))}
+              </View>
+            )}
+            <AppText style={styles.heading}>Instructions:</AppText>
+            {instructions && (
+              <View style={styles.instructions}>
+                {instructions.map((step, index) => (
+                  <AppText key={index} style={styles.instruction}>
+                    {step}
+                  </AppText>
+                ))}
+              </View>
+            )}
           </View>
-          <AppText style={styles.heading}>Ingredients:</AppText>
-          {ingredients && (
-            <View style={styles.ingredients}>
-              {ingredients.map((ingredient, index) => (
-                <AppText key={index} style={styles.ingredient}>
-                  {ingredient.name} - {ingredient.amount}
-                </AppText>
-              ))}
-            </View>
-          )}
-          <AppText style={styles.heading}>Instructions:</AppText>
-          {instructions && (
-            <View style={styles.instructions}>
-              {instructions.map((step, index) => (
-                <AppText key={index} style={styles.instruction}>
-                  {step}
-                </AppText>
-              ))}
-            </View>
-          )}
-        </View>
-      </ScrollView>
-      {currentUser != null && (
-        <AppCard style={styles.ratingCard}>
-          <AppText type="defaultSemiBold" style={styles.ratingCardText}>
-            How would you rate this recipe?
-          </AppText>
-          <AppLoadingOverlay
-            loading={isRatingLoading || isRating}
-            contentStyle={styles.ratingLoadingContent}
-          >
-            <AppRating
-              fractions={0}
-              startingValue={noRatingFound ? 0 : rating?.rating ?? 0}
-              onFinishRating={(ratingValue: number) =>
-                handleRating(ratingValue)
-              }
-              imageSize={32}
-            />
-          </AppLoadingOverlay>
-        </AppCard>
-      )}
+        </ScrollView>
+        {currentUser != null && (
+          <AppCard style={styles.ratingCard}>
+            <AppText type="defaultSemiBold" style={styles.ratingCardText}>
+              How would you rate this recipe?
+            </AppText>
+            <AppLoadingOverlay
+              loading={isRatingLoading || isRating}
+              contentStyle={styles.ratingLoadingContent}
+            >
+              <AppRating
+                fractions={0}
+                startingValue={noRatingFound ? 0 : rating?.rating ?? 0}
+                onFinishRating={(ratingValue: number) =>
+                  handleRating(ratingValue)
+                }
+                imageSize={32}
+              />
+            </AppLoadingOverlay>
+          </AppCard>
+        )}
+      </AppLoadingOverlay>
     </SafeAreaView>
   );
 };

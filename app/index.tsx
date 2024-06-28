@@ -23,6 +23,7 @@ import { MyRecipeOptionsMenu } from "./components/MyRecipeOptionsMenu";
 import { DeleteModal } from "./components/DeleteModal";
 import { RecipeViewModel } from "./viewmodels/recipe";
 import { View } from "react-native";
+import { styles } from "./components/styles";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,8 +31,8 @@ SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function App() {
-  const { currentUser } = UserViewModel();
-  const { deleteRecipe} = RecipeViewModel();
+  const { currentUser, signOut } = UserViewModel();
+  const { deleteRecipe } = RecipeViewModel();
 
   const [loaded] = useFonts({
     SpaceMono: require("./assets/fonts/SpaceMono-Regular.ttf"),
@@ -43,10 +44,10 @@ export default function App() {
     }
   }, [loaded]);
 
-  const [signOutModalVisible, setSignOutModalVisible] = useState<boolean>(false);
+  const [signOutModalVisible, setSignOutModalVisible] =
+    useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-
-  const { signOut } = UserViewModel();
+  const [deletingRecipe, setDeletingRecipe] = useState<boolean>(false);
 
   if (!loaded) {
     return null;
@@ -62,27 +63,48 @@ export default function App() {
     });
   };
 
-  const navigateToMyUser = (navigation: NativeStackNavigationProp<StackParamList>) => {
-    navigation.navigate("User", { userId: currentUser?.uid!! })
-  }
+  const navigateToMyUser = (
+    navigation: NativeStackNavigationProp<StackParamList>
+  ) => {
+    navigation.navigate("User", { userId: currentUser?.uid!! });
+  };
 
-  const navigateToEditRecipe = (navigation: NativeStackNavigationProp<StackParamList>, recipeId: string) => {
-    navigation.navigate("EditRecipe", { recipeId: recipeId })
-  }
+  const navigateToEditRecipe = (
+    navigation: NativeStackNavigationProp<StackParamList>,
+    recipeId: string
+  ) => {
+    navigation.navigate("EditRecipe", { recipeId: recipeId });
+  };
 
-  const handleDelete = async (navigation: NativeStackNavigationProp<StackParamList>, recipeId: string) => {
+  const handleDelete = async (
+    navigation: NativeStackNavigationProp<StackParamList>,
+    recipeId: string
+  ) => {
     if (!recipeId) {
       console.log("Missing recipe ID for deletion.");
       return;
     }
-  
+
     try {
+      setDeletingRecipe(true);
       await deleteRecipe(recipeId);
-  
+
       console.log("Recipe deleted successfully!");
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "Your recipe has been deleted!",
+      });
       navigation.goBack(); // Navigate back after successful deletion
     } catch (error) {
       console.log("Error deleting recipe:", error);
+      Toast.show({
+        type: "error",
+        text1: "Oh no!",
+        text2: "There was a problem deleting the recipe, please try again.",
+      });
+    } finally {
+      setDeletingRecipe(false);
     }
   };
 
@@ -91,23 +113,28 @@ export default function App() {
       <Stack.Navigator
         screenOptions={({ route, navigation }) => ({
           title: "Mana Mana",
-          contentStyle: { backgroundColor: Colors.background },
+          contentStyle: styles.contentStyle,
           headerRight: () => (
-            <View style={{flexDirection: "row"}}>
-              {route.name == "ViewRecipe" && route.params?.userId == currentUser?.uid && (
-                <>
-                  <MyRecipeOptionsMenu
-                    recipeId={route.params?.recipeId}
-                    onEdit={() => navigateToEditRecipe(navigation, route.params?.recipeId)}
-                    onDelete={() => setDeleteModalVisible(true)}
-                  />
-                  <DeleteModal
-                    visible={deleteModalVisible}
-                    onClose={() => setDeleteModalVisible(false)}
-                    onDelete={() => handleDelete(navigation, route.params?.recipeId)}
-                  />
-                </>
-              )}
+            <View style={styles.headerRight}>
+              {route.name == "ViewRecipe" &&
+                route.params?.userId == currentUser?.uid && (
+                  <>
+                    <MyRecipeOptionsMenu
+                      recipeId={route.params?.recipeId}
+                      onEdit={() =>
+                        navigateToEditRecipe(navigation, route.params?.recipeId)
+                      }
+                      onDelete={() => setDeleteModalVisible(true)}
+                    />
+                    <DeleteModal
+                      visible={deleteModalVisible}
+                      onClose={() => setDeleteModalVisible(false)}
+                      onDelete={() =>
+                        handleDelete(navigation, route.params?.recipeId)
+                      }
+                    />
+                  </>
+                )}
               {route.name !== "Login" && (
                 <>
                   <HeaderOptionsMenu
@@ -130,7 +157,12 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="NewRecipe" component={NewRecipe} />
         <Stack.Screen name="EditRecipe" component={EditRecipe} />
-        <Stack.Screen name="ViewRecipe" component={ViewRecipe} />
+        <Stack.Screen
+          name="ViewRecipe"
+          children={(props) => (
+            <ViewRecipe {...props} deletingRecipe={deletingRecipe} />
+          )}
+        />
         <Stack.Screen name="User" component={UserScreen} />
       </Stack.Navigator>
       <Toast />
