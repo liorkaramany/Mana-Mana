@@ -23,6 +23,7 @@ import { MyRecipeOptionsMenu } from "./components/MyRecipeOptionsMenu";
 import { DeleteModal } from "./components/DeleteModal";
 import { RecipeViewModel } from "./viewmodels/recipe";
 import { View } from "react-native";
+import { styles } from "./components/styles";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -112,9 +113,9 @@ export default function App() {
       <Stack.Navigator
         screenOptions={({ route, navigation }) => ({
           title: "Mana Mana",
-          contentStyle: { backgroundColor: Colors.background },
+          contentStyle: styles.contentStyle,
           headerRight: () => (
-            <View style={{ flexDirection: "row" }}>
+            <View style={styles.headerRight}>
               {route.name == "ViewRecipe" &&
                 route.params?.userId == currentUser?.uid && (
                   <>
