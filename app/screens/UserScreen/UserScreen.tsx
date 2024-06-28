@@ -6,9 +6,11 @@ import {
   EditableUserDetailsSection,
   EditableUserDetailsSectionValue,
 } from "@/app/components/EditableUserDetailsSection";
+import { NoRecipesFound } from "@/app/components/NoRecipesFound";
 import { RecipeCard } from "@/app/components/RecipeCard";
 import { UserDetailsSection } from "@/app/components/UserDetailsSection";
-import { useAsync } from "@/app/hooks/useAsync";
+import { Colors } from "@/app/config/Colors";
+import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
 import { FullRecipe } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
@@ -19,8 +21,6 @@ import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
-import { Colors } from "@/app/config/Colors";
-import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
 
 export type UserScreenProps = NativeStackScreenProps<StackParamList, "User">;
 
@@ -188,8 +188,13 @@ export const UserScreen = (props: UserScreenProps) => {
         <FlatList
           refreshing={loading}
           onRefresh={refetchRecipes}
+          ListEmptyComponent={NoRecipesFound}
           style={styles.recipesList}
-          contentContainerStyle={styles.recipesListItem}
+          contentContainerStyle={
+            recipes.length === 0
+              ? styles.recipesListItemEmpty
+              : styles.recipesListItem
+          }
           data={recipes}
           renderItem={({ item: recipe }) => (
             <>

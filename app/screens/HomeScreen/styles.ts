@@ -23,4 +23,7 @@ export const styles = StyleSheet.create({
   recipesListItem: {
     gap: 32,
   },
+  recipesListItemEmpty: {
+    flex: 1,
+  },
 });
