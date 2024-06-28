@@ -4,6 +4,9 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  containerLoadingOverlay: {
+    flex: 1,
+  },
   image: {
     width: "100%",
     aspectRatio: 4 / 3,
