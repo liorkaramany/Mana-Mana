@@ -103,11 +103,6 @@ export const LoginScreen = (props: LoginScreenProps) => {
                 onChangeText={setPassword}
               />
               {error && <Text style={styles.errorText}>{error}</Text>}
-              <TouchableOpacity style={styles.forgotPasswordButton}>
-                <AppText style={styles.forgotPasswordText}>
-                  Forgot password?
-                </AppText>
-              </TouchableOpacity>
               <AppButton
                 title="Login"
                 style={styles.loginButton}

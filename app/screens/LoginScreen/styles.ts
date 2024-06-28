@@ -27,14 +27,6 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 15,
   },
-  forgotPasswordButton: {
-    alignItems: "flex-end",
-    marginBottom: 12,
-  },
-  forgotPasswordText: {
-    color: Colors.white,
-    textDecorationLine: "underline",
-  },
   loginButton: {
     backgroundColor: Colors.tint,
     color: Colors.white,
