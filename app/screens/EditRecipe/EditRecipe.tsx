@@ -1,7 +1,11 @@
 import { categoriesApi } from "@/app/api/categoriesApi";
 import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 import { AppText } from "@/app/components/AppText";
-import { RecipeForm, RecipeFormValueType } from "@/app/components/RecipeForm";
+import {
+  RecipeForm,
+  RecipeFormReturnType,
+  RecipeFormValueType,
+} from "@/app/components/RecipeForm";
 import { Colors } from "@/app/config/Colors";
 import { useAsync } from "@/app/hooks/useAsync";
 import { StackParamList } from "@/app/types/navigation";
@@ -37,7 +41,7 @@ export const EditRecipe = (props: EditRecipeScreenProps) => {
 
   const [updating, setUpdating] = useState<boolean>(false);
 
-  const uploadRecipe = async (recipe: RecipeFormValueType) => {
+  const uploadRecipe = async (recipe: RecipeFormReturnType) => {
     setUpdating(true);
 
     try {
