@@ -11,13 +11,18 @@ import { Recipe } from "@/app/models/recipe";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleProp, View, ViewStyle } from "react-native";
 import { styles } from "./styles";
+import { AppText } from "../AppText";
 
-export type RecipeFormValueType = Omit<Recipe, "author">;
+export type RecipeFormValueType = Omit<Recipe, "author" | "image"> & {
+  image?: Recipe["image"];
+};
+
+export type RecipeFormReturnType = Omit<Recipe, "author">;
 
 export type RecipeFormProps = {
   categoryResponse: CategoryResponse;
   recipe?: RecipeFormValueType;
-  onRecipeFormSubmit?: (recipe: RecipeFormValueType) => void;
+  onRecipeFormSubmit?: (recipe: RecipeFormReturnType) => void;
   recipeFormSubmitText?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -73,11 +78,10 @@ export const RecipeForm = (props: RecipeFormProps) => {
         onChangeText={getInnerRecipePropertySetter("title")}
       />
       <ScrollView contentContainerStyle={styles.scrollView}>
+        <AppText></AppText>
         <AppImagePicker
-          imageUri={innerRecipe.image ?? undefined}
-          onChangeImageUri={(value) =>
-            getInnerRecipePropertySetter("image")(value ?? null)
-          }
+          imageUri={innerRecipe.image}
+          onChangeImageUri={getInnerRecipePropertySetter("image")}
         />
         <RecipeFormSection title="Tags">
           <AppMultiSelect
@@ -103,7 +107,9 @@ export const RecipeForm = (props: RecipeFormProps) => {
         <AppButton
           disabled={disabledSubmitButton}
           title={recipeFormSubmitText}
-          onPress={() => onRecipeFormSubmit?.(innerRecipe)}
+          onPress={() =>
+            onRecipeFormSubmit?.({ ...innerRecipe, image: innerRecipe.image! })
+          }
           size="lg"
           style={styles.uploadButton}
         />
