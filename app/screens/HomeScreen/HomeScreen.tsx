@@ -16,6 +16,7 @@ import { FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 import Toast from "react-native-toast-message";
 import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
+import { NoRecipesFound } from "@/app/components/NoRecipesFound";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -118,8 +119,13 @@ export const HomeScreen = (props: HomeScreenProps) => {
         <FlatList
           refreshing={loading}
           onRefresh={refetchRecipes}
+          ListEmptyComponent={NoRecipesFound}
           style={styles.recipesList}
-          contentContainerStyle={styles.recipesListItem}
+          contentContainerStyle={
+            filteredRecipes.length === 0
+              ? styles.recipesListItemEmpty
+              : styles.recipesListItem
+          }
           data={filteredRecipes}
           renderItem={({ item: recipe }) => (
             <>

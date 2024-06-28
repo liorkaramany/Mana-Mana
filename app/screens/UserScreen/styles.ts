@@ -29,6 +29,9 @@ export const styles = StyleSheet.create({
   recipesListItem: {
     gap: 32,
   },
+  recipesListItemEmpty: {
+    flex: 1,
+  },
   addRecipeButton: {
     aspectRatio: 1,
     paddingHorizontal: 0,
