@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  loadingOverlay: { flex: 1 },
   container: {
     padding: 20,
     flex: 1,
