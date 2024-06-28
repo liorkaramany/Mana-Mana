@@ -15,6 +15,8 @@ import { useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
+import { CategoriesError } from "@/app/components/CategoriesError";
+import { RecipeByIdError } from "@/app/components/RecipeByIdError";
 
 export type EditRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -28,15 +30,17 @@ export const EditRecipe = (props: EditRecipeScreenProps) => {
   const { update: updateRecipe, findById: findRecipeById } = RecipeViewModel();
 
   const {
-    loading: categoriesLoading,
-    error: categoriesError,
+    loading: loadingCategoryResponse,
+    error: categoryResponseError,
     response: categoryResponse,
+    refetch: refetchCategoryResponse,
   } = useAsync({ action: categoriesApi.getAllCategories });
 
   const {
     loading,
     error,
     response: recipe,
+    refetch: refetchRecipe,
   } = useAsync({ action: async () => await findRecipeById(recipeId) });
 
   const [updating, setUpdating] = useState<boolean>(false);
@@ -74,11 +78,22 @@ export const EditRecipe = (props: EditRecipeScreenProps) => {
   }
 
   if (error || recipe == null) {
+    console.log(error?.message);
+
+    return <RecipeByIdError onTryAgain={refetchRecipe} />;
+  }
+
+  if (loadingCategoryResponse) {
     return (
-      <View style={styles.page}>
-        <AppText>We couldn't load your recipe, please try again later.</AppText>
+      <View>
+        <AppText>Loading categories...</AppText>
       </View>
     );
+  }
+
+  if (categoryResponseError || categoryResponse == null) {
+    console.log(categoryResponseError?.message);
+    return <CategoriesError onTryAgain={refetchCategoryResponse} />;
   }
 
   if (categoryResponse != null)

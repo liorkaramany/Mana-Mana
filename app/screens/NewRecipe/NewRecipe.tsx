@@ -17,6 +17,8 @@ import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 import { UserViewModel } from "@/app/viewmodels/user";
 import { StackActions } from "@react-navigation/native";
+import { AppButton } from "@/app/components/AppButton";
+import { CategoriesError } from "@/app/components/CategoriesError";
 
 export type NewRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -30,9 +32,10 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
   const { currentUser } = UserViewModel();
 
   const {
-    loading,
-    error,
+    loading: loadingCategoryResponse,
+    error: categoryResponseError,
     response: categoryResponse,
+    refetch: refetchCategoryResponse,
   } = useAsync({ action: categoriesApi.getAllCategories });
 
   const [uploading, setUploading] = useState<boolean>(false);
@@ -75,6 +78,19 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
       }
     }
   };
+
+  if (loadingCategoryResponse) {
+    return (
+      <View>
+        <AppText>Loading categories...</AppText>
+      </View>
+    );
+  }
+
+  if (categoryResponseError || categoryResponse == null) {
+    console.log(categoryResponseError?.message);
+    return <CategoriesError onTryAgain={refetchCategoryResponse} />;
+  }
 
   if (categoryResponse != null)
     return (
