@@ -21,6 +21,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repeatedPassword, setRepeatedPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const { signIn, signUp } = UserViewModel();
@@ -38,6 +39,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
   }, []);
 
   const handlePress = () => {
+    setRepeatedPassword("");
     setShowLogin(!showLogin);
   };
 
@@ -72,6 +74,11 @@ export const LoginScreen = (props: LoginScreenProps) => {
     try {
       setLoading(true);
       setError(null); // Clear any previous errors
+
+      if (password !== repeatedPassword) {
+        throw new Error("Password and repeated password don't match");
+      }
+
       const userCredential = await signUp(email, password);
       console.log("User signed up:", userCredential.user);
 
@@ -152,6 +159,8 @@ export const LoginScreen = (props: LoginScreenProps) => {
                 style={styles.input}
                 placeholder="Repeat Password"
                 secureTextEntry={true}
+                value={repeatedPassword}
+                onChangeText={setRepeatedPassword}
               />
               {error && <Text style={styles.errorText}>{error}</Text>}
               <AppButton
