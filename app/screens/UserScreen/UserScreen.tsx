@@ -121,8 +121,6 @@ export const UserScreen = (props: UserScreenProps) => {
         });
       }
     }
-
-    setDeleteModalVisible(false);
   };
 
   const navigateToRecipe = (recipe: FullRecipe) => {

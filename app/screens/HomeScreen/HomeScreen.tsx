@@ -91,8 +91,6 @@ export const HomeScreen = (props: HomeScreenProps) => {
         });
       }
     }
-
-    setDeleteModalVisible(false);
   };
 
   const navigateToRecipe = (recipe: FullRecipe) => {
