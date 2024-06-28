@@ -1,3 +1,4 @@
+import { Colors } from "@/app/config/Colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -19,8 +20,8 @@ export const styles = StyleSheet.create({
     aspectRatio: 1,
   },
   removeProfileImageButton: { right: -8, top: -8 },
-  name: {
-    alignSelf: "flex-start",
+  nameContainer: {
+    alignItems: "flex-start",
     flex: 1,
   },
   actionsContainer: { justifyContent: "space-between" },
@@ -30,5 +31,10 @@ export const styles = StyleSheet.create({
     paddingVertical: 0,
     paddingHorizontal: 0,
     borderRadius: 100,
+  },
+  errorText: {
+    color: Colors.error,
+    fontSize: 16,
+    marginTop: 4,
   },
 });

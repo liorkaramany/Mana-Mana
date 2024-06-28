@@ -10,4 +10,5 @@ export const Colors = {
   tabIconDefault: "#687076",
   tabIconSelected: primary,
   white: secondary,
+  error: "#FF0000",
 };
