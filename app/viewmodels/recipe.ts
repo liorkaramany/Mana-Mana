@@ -58,7 +58,7 @@ export const RecipeViewModel = () => {
             const cachedImage = await getCachedImageByUrlSQLite(recipe.image);
             if (cachedImage) {
               console.log("image from cache");
-              recipe.image = cachedImage.imageData;
+              recipe.image = URL.createObjectURL(cachedImage.imageData);
             } else {
               console.log("image not from cache");
               const imageData = await fetchAndCacheImage(recipe.image);
@@ -174,7 +174,7 @@ export const RecipeViewModel = () => {
     try {
       const updatedRecipe = await updateRecipeFirestore(
         id,
-        (({ id, rating, author, ...rest }) => ({ ...rest }))(recipe)
+        (({ rating, author, ...rest }) => ({ ...rest }))(recipe)
       );
       // Update cached recipe in SQLite
       await saveCachedRecipeSQLite(id, updatedRecipe);
