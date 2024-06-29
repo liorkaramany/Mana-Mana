@@ -12,12 +12,14 @@ import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import Feather from "@expo/vector-icons/Feather";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles";
 import Toast from "react-native-toast-message";
 import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 import { NoRecipesFound } from "@/app/components/NoRecipesFound";
 import { RecipesError } from "@/app/components/RecipesError";
+import React from "react";
+import loadingGif from "../../assets/images/loading.gif";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -43,7 +45,11 @@ export const HomeScreen = (props: HomeScreenProps) => {
 
   if (loading) {
     return (
-      <View>
+      <View style={styles.loadingContainer}>
+        <Image
+          source={loadingGif}
+          style={styles.loadingGif}
+        />
         <AppText>Loading recipes...</AppText>
       </View>
     );
