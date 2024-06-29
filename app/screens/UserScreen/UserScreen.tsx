@@ -87,7 +87,6 @@ export const UserScreen = (props: UserScreenProps) => {
   }
 
   if (error || recipes == null) {
-    // Check for empty recipes array
     console.log("User recipes error:", error?.message);
 
     return <RecipesError onTryAgain={refetchRecipes} />;
