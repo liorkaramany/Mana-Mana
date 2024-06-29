@@ -24,6 +24,7 @@ import { DeleteModal } from "./components/DeleteModal";
 import { RecipeViewModel } from "./viewmodels/recipe";
 import { View } from "react-native";
 import { styles } from "./components/styles";
+import { SignOutModalLoading } from "./components/SignOutModalLoading";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -48,6 +49,7 @@ export default function App() {
     useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [deletingRecipe, setDeletingRecipe] = useState<boolean>(false);
+  const [signingOut, setSigningOut] = useState<boolean>(false);
 
   if (!loaded) {
     return null;
@@ -56,11 +58,23 @@ export default function App() {
   const handleSignOut = async (
     navigation: NativeStackNavigationProp<StackParamList>
   ) => {
-    await signOut();
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Login" }],
-    });
+    try {
+      setSigningOut(true);
+      await signOut();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.log("Sign out error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Oh no!",
+        text2: "There was a problem signing you out, please try again.",
+      });
+    } finally {
+      setSigningOut(false);
+    }
   };
 
   const navigateToMyUser = (
@@ -152,6 +166,7 @@ export default function App() {
                   onClose={() => setSignOutModalVisible(false)}
                   onSignOut={() => handleSignOut(navigation)}
                 />
+                <SignOutModalLoading visible={signingOut} />
               </>
             </View>
           ),

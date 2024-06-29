@@ -6,8 +6,8 @@ import {
   deleteDoc,
   doc,
   getAggregateFromServer,
-  getDoc,
-  getDocs,
+  getDocFromServer,
+  getDocsFromServer,
   query,
   setDoc,
   updateDoc,
@@ -89,7 +89,7 @@ const createRecipe = async (recipe: Recipe): Promise<string> => {
 };
 
 const findRecipes = async (): Promise<FullRecipe[]> => {
-  const querySnapshot = await getDocs(recipesCollection);
+  const querySnapshot = await getDocsFromServer(recipesCollection);
 
   return await Promise.all(
     querySnapshot.docs.map(async (document) => {
@@ -112,7 +112,7 @@ const findRecipeDocumentSnapById = async (id: string) => {
   const documentReference = doc(db, "recipes", id).withConverter(
     recipesConverter
   );
-  const recipeSnap = await getDoc(documentReference);
+  const recipeSnap = await getDocFromServer(documentReference);
 
   if (!recipeSnap.exists()) {
     throw new RecipeNotFoundError(id);
@@ -170,7 +170,7 @@ const findRecipeRatingSnap = async (recipeId: string, userId: string) => {
     userId
   );
 
-  const recipeDocumentSnap = await getDoc(recipeRatingDocument);
+  const recipeDocumentSnap = await getDocFromServer(recipeRatingDocument);
 
   if (!recipeDocumentSnap.exists()) {
     throw new RecipeRatingNotFoundError(recipeId, userId);
@@ -202,7 +202,7 @@ const findUserRecipes = async (userId: string): Promise<FullRecipe[]> => {
   const author = await findUserDetailsById(userId);
 
   const recipesQuery = query(recipesCollection, where("author", "==", userId));
-  const querySnapshot = await getDocs(recipesQuery);
+  const querySnapshot = await getDocsFromServer(recipesQuery);
 
   return await Promise.all(
     querySnapshot.docs.map(async (document) => {
@@ -230,12 +230,12 @@ const deleteRecipeModel = async (id: string): Promise<void> => {
 export {
   averageRecipeRating,
   createRecipe,
+  deleteRecipeModel,
   findRecipeById,
   findRecipeRating,
   findRecipes,
+  findUserRecipes,
   rateRecipe,
   updateRecipe,
   updateRecipeRating,
-  findUserRecipes,
-  deleteRecipeModel,
 };
