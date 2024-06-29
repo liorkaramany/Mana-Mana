@@ -5,7 +5,7 @@ import { DeleteModal } from "@/app/components/DeleteModal";
 import { RecipeCard } from "@/app/components/RecipeCard";
 import { Colors } from "@/app/config/Colors";
 import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
-import { FullRecipe, findRecipes } from "@/app/models/recipe";
+import { FullRecipe } from "@/app/models/recipe";
 import { UserDetails } from "@/app/models/user";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
@@ -46,10 +46,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Image
-          source={loadingGif}
-          style={styles.loadingGif}
-        />
+        <Image source={loadingGif} style={styles.loadingGif} />
         <AppText>Loading recipes...</AppText>
       </View>
     );
