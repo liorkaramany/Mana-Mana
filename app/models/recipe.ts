@@ -123,7 +123,11 @@ const findRecipeDocumentSnapById = async (id: string) => {
 
 const findRecipeById = async (id: string) => {
   const recipeData = (await findRecipeDocumentSnapById(id)).data();
-  return { ...recipeData, id };
+  return {
+    ...recipeData,
+    id,
+    author: await findUserDetailsById(recipeData.author),
+  };
 };
 
 const updateRecipe = async (id: string, recipe: Partial<Recipe>) => {
@@ -135,7 +139,13 @@ const updateRecipe = async (id: string, recipe: Partial<Recipe>) => {
     await updateRecipeImage(recipeSnap.ref, recipe.image);
   }
 
-  return { id, ...recipeSnap.data() };
+  const recipeData = recipeSnap.data();
+
+  return {
+    id,
+    ...recipeData,
+    author: await findUserDetailsById(recipeData.author),
+  };
 };
 
 const rateRecipe = async (

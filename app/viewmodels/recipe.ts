@@ -66,7 +66,6 @@ export const RecipeViewModel = () => {
             }
             await saveCachedRecipeSQLite(recipe.id, {
               ...recipe,
-              author: recipe.author.id,
             });
             return recipe;
           })
