@@ -13,6 +13,7 @@ import {
   RecipeRatingNotFoundError,
   RecipeNotFoundError,
   RecipeRating,
+  averageRecipeRating,
 } from "../models/recipe";
 import {
   UserDetails,
@@ -204,8 +205,15 @@ export const RecipeViewModel = () => {
     recipeRating: RecipeRating
   ) => {
     try {
-      const ratedRecipe = await rateRecipeFirestore(id, userId, recipeRating);
-      return ratedRecipe;
+      await rateRecipeFirestore(id, userId, recipeRating);
+
+      const updatedRecipe = await findRecipeByIdFirestore(id);
+      const updatedRecipeRating = await averageRecipeRating(id);
+
+      await saveCachedRecipeSQLite(id, {
+        ...updatedRecipe,
+        rating: updatedRecipeRating,
+      });
     } catch (error) {
       if (
         error instanceof RecipeNotFoundError ||

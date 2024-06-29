@@ -1,5 +1,5 @@
 import { collectionGroup, onSnapshot } from "firebase/firestore";
-import { FullRecipe, Recipe } from "../models/recipe";
+import { FullRecipe, Recipe, averageRecipeRating } from "../models/recipe";
 import { UserDetails, findUserDetailsById } from "../models/user";
 import {
   deleteCachedRecipe,
@@ -21,13 +21,14 @@ const listenForRecipesChanges = async (callback: SnapshotListenerCallback) => {
           const recipe = change.doc.data() as Recipe;
           const author = await findUserDetailsById(recipe.author);
           const recipeId = change.doc.id;
+          const rating = await averageRecipeRating(recipeId);
 
           switch (change.type) {
             case "added":
             case "modified":
               // Update or add to SQLite cache
               console.log("modified or added");
-              saveCachedRecipe(recipeId, { ...recipe, author });
+              saveCachedRecipe(recipeId, { ...recipe, author, rating });
               break;
             case "removed":
               // Remove from SQLite cache
