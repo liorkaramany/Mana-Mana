@@ -64,7 +64,10 @@ export const RecipeViewModel = () => {
               const imageData = await fetchAndCacheImage(recipe.image);
               recipe.image = imageData;
             }
-            await saveCachedRecipeSQLite(recipe.id, recipe);
+            await saveCachedRecipeSQLite(recipe.id, {
+              ...recipe,
+              author: recipe.author.id,
+            });
             return recipe;
           })
         );
@@ -129,10 +132,10 @@ export const RecipeViewModel = () => {
 
   const create = async (recipe: FullRecipe) => {
     try {
-      const newRecipe = await createRecipeFirestore(recipe);
+      const newRecipeId = await createRecipeFirestore(recipe);
       // Save new recipe to SQLite cache
-      await saveCachedRecipeSQLite(newRecipe, recipe);
-      return newRecipe;
+      await saveCachedRecipeSQLite(newRecipeId, recipe);
+      return newRecipeId;
     } catch (error) {
       throw new Error("Failed to create recipe.");
     }

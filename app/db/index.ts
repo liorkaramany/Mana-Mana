@@ -48,7 +48,7 @@ const saveCachedRecipe = async (recipeId: string, recipeData: FullRecipe) => {
         INSERT OR REPLACE INTO recipe (id, authorId, data)
         VALUES (?, ?, ?);
         `,
-        [recipeId, recipeData.author.id, JSON.stringify(recipeData)]
+        [recipeId, recipeData.author, JSON.stringify(recipeData)]
       );
     });
 
