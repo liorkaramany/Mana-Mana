@@ -42,4 +42,15 @@ export const styles = StyleSheet.create({
     bottom: 16,
     right: 16,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingGif: {
+    width: "100%",
+    height: "100%",
+    resizeMode: 'contain',
+    marginBottom: 20,
+  },
 });

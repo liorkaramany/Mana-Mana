@@ -12,11 +12,12 @@ import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Image, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 import { CategoriesError } from "@/app/components/CategoriesError";
 import { RecipeByIdError } from "@/app/components/RecipeByIdError";
+import loadingGif from "../../assets/images/loading.gif";
 
 export type EditRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -85,7 +86,11 @@ export const EditRecipe = (props: EditRecipeScreenProps) => {
 
   if (loadingCategoryResponse) {
     return (
-      <View>
+      <View style={styles.loadingContainer}>
+        <Image
+          source={loadingGif}
+          style={styles.loadingGif}
+        />
         <AppText>Loading categories...</AppText>
       </View>
     );
