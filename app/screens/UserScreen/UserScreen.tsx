@@ -18,11 +18,12 @@ import { UserViewModel } from "@/app/viewmodels/user";
 import Feather from "@expo/vector-icons/Feather";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 import { UserError } from "@/app/components/UserError";
 import { RecipesError } from "@/app/components/RecipesError";
+import loadingGif from "../../assets/images/loading.gif";
 
 export type UserScreenProps = NativeStackScreenProps<StackParamList, "User">;
 
@@ -66,7 +67,11 @@ export const UserScreen = (props: UserScreenProps) => {
 
   if (userLoading) {
     return (
-      <View>
+      <View style={styles.loadingContainer}>
+        <Image
+          source={loadingGif}
+          style={styles.loadingGif}
+        />
         <AppText>Loading user data...</AppText>
       </View>
     );
@@ -80,8 +85,12 @@ export const UserScreen = (props: UserScreenProps) => {
 
   if (loading) {
     return (
-      <View>
-        <AppText>Loading user recipes...</AppText>
+      <View style={styles.loadingContainer}>
+        <Image
+          source={loadingGif}
+          style={styles.loadingGif}
+        />
+        <AppText>Loading recipes...</AppText>
       </View>
     );
   }

@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { Image, SafeAreaView, ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
+import loadingGif from "../../assets/images/loading.gif";
 
 export type ViewRecipeProps = NativeStackScreenProps<
   StackParamList,
@@ -81,9 +82,13 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.loadingContainer}>
+        <Image
+          source={loadingGif}
+          style={styles.loadingGif}
+        />
         <AppText>Loading recipe...</AppText>
-      </SafeAreaView>
+      </View>
     );
   }
 
