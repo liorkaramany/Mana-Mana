@@ -21,6 +21,8 @@ import { useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { styles } from "./styles";
+import { UserError } from "@/app/components/UserError";
+import { RecipesError } from "@/app/components/RecipesError";
 
 export type UserScreenProps = NativeStackScreenProps<StackParamList, "User">;
 
@@ -62,7 +64,7 @@ export const UserScreen = (props: UserScreenProps) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [deletingRecipe, setDeletingRecipe] = useState<boolean>(false);
 
-  if (userLoading || loading) {
+  if (userLoading) {
     return (
       <View>
         <AppText>Loading user data...</AppText>
@@ -71,24 +73,24 @@ export const UserScreen = (props: UserScreenProps) => {
   }
 
   if (userError || user == null) {
-    console.log("Error:", userError?.message);
+    console.log("User error:", userError?.message);
 
+    return <UserError onTryAgain={refetchUser} />;
+  }
+
+  if (loading) {
     return (
       <View>
-        <AppText>Could not get the user.</AppText>
+        <AppText>Loading user recipes...</AppText>
       </View>
     );
   }
 
   if (error || recipes == null) {
     // Check for empty recipes array
-    console.log("Error:", error?.message);
+    console.log("User recipes error:", error?.message);
 
-    return (
-      <View>
-        <AppText>Could not get the recipes.</AppText>
-      </View>
-    );
+    return <RecipesError onTryAgain={refetchRecipes} />;
   }
 
   const handleEditPress = (recipeId: string) => {
