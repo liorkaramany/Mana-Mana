@@ -29,7 +29,7 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
   const { navigation, route } = props;
 
   const { create: createRecipe } = RecipeViewModel();
-  const { currentUser } = UserViewModel();
+  const { currentUser, currentUserDetails } = UserViewModel();
 
   const {
     loading: loadingCategoryResponse,
@@ -52,10 +52,9 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
       setUploading(true);
 
       try {
-        const newRecipeId = await createRecipe({
-          ...recipe,
-          author: currentUser.uid,
-        });
+        console.log("currentUserDetails");
+        console.log(currentUserDetails);
+        const newRecipeId = await createRecipe(currentUserDetails, recipe);
         Toast.show({
           type: "success",
           text1: "Success!",
@@ -68,6 +67,7 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
           })
         );
       } catch (error) {
+        console.log(error);
         Toast.show({
           type: "error",
           text1: "Oh no!",
