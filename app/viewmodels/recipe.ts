@@ -38,7 +38,7 @@ export const RecipeViewModel = () => {
     error,
     response: recipes,
   } = useAsync({
-    action: getCachedRecipesSQLite(),
+    action: () => getCachedRecipesSQLite(),
   });
 
   const findRecipes = async () => {

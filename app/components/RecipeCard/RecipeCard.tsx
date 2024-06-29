@@ -1,4 +1,8 @@
-import { FullRecipe, RecipeRatingNotFoundError, findRecipeRating } from "@/app/models/recipe";
+import {
+  FullRecipe,
+  RecipeRatingNotFoundError,
+  findRecipeRating,
+} from "@/app/models/recipe";
 import Feather from "@expo/vector-icons/Feather";
 import { TouchableOpacity, View } from "react-native";
 import { AppButton } from "../AppButton";
@@ -25,7 +29,8 @@ export type RecipeCardProps = Pick<
 };
 
 export const RecipeCard = (props: RecipeCardProps) => {
-  const { recipe, onEdit, onDelete, isInUserFeed, onUserPressed, ...rest } = props;
+  const { recipe, onEdit, onDelete, isInUserFeed, onUserPressed, ...rest } =
+    props;
   const { currentUser } = UserViewModel();
 
   const { loading: isRatingLoading, response: rating } = useAsyncFocused({
@@ -34,29 +39,6 @@ export const RecipeCard = (props: RecipeCardProps) => {
         ? Promise.resolve(null)
         : findRecipeRating(recipe.id, currentUser.uid),
     dependencies: [recipe.id, currentUser?.uid],
-    onError: (error) => {
-      if (error instanceof RecipeRatingNotFoundError) {
-        console.log(
-          `No rating found: ViewRecipe > findRecipeRating(${recipe.id}, ${
-            currentUser!.uid
-          }):`,
-          error
-        );
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Oh no!",
-          text2:
-            "There was a problem getting your up to date rating of the recipe.",
-        });
-        console.log(
-          `Error: ViewRecipe > findRecipeRating(${recipe.id}, ${
-            currentUser!.uid
-          }):`,
-          error
-        );
-      }
-    },
   });
 
   const ingredientsList = recipe.ingredients
@@ -69,31 +51,34 @@ export const RecipeCard = (props: RecipeCardProps) => {
 
   return (
     <View style={styles.container}>
-        <View style={styles.actions}>
+      <View style={styles.actions}>
         {!isInUserFeed && (
-          <TouchableOpacity onPress={() => (onUserPressed(recipe.author))}>
-            <UserWithAvatar name={recipe.author.name} image={recipe.author.image}  />
+          <TouchableOpacity onPress={() => onUserPressed?.(recipe.author)}>
+            <UserWithAvatar
+              name={recipe.author.name}
+              image={recipe.author.image}
+            />
           </TouchableOpacity>
-          )}
-          {currentUser?.uid == recipe.author.id && (
-            <View style={styles.actionButtons}>
-              <AppButton
-                onPress={() => onEdit && onEdit(recipe.id)}
-                variant="neutral"
-                size="sm"
-                style={styles.actionButton}
-                title={<Feather name="edit-2" size={20} />}
-              />
-              <AppButton
-                onPress={() => onDelete && onDelete(recipe.id)}
-                variant="neutral"
-                size="sm"
-                style={styles.actionButton}
-                title={<Feather name="trash-2" size={20} />}
-              />
-            </View>
-          )}
-        </View>
+        )}
+        {currentUser?.uid == recipe.author.id && (
+          <View style={styles.actionButtons}>
+            <AppButton
+              onPress={() => onEdit && onEdit(recipe.id)}
+              variant="neutral"
+              size="sm"
+              style={styles.actionButton}
+              title={<Feather name="edit-2" size={20} />}
+            />
+            <AppButton
+              onPress={() => onDelete && onDelete(recipe.id)}
+              variant="neutral"
+              size="sm"
+              style={styles.actionButton}
+              title={<Feather name="trash-2" size={20} />}
+            />
+          </View>
+        )}
+      </View>
       <AppCard {...rest} image={recipe.image ?? undefined}>
         <AppText type="defaultSemiBold">{recipe.title}</AppText>
         <AppText>Ingredients</AppText>
@@ -101,14 +86,15 @@ export const RecipeCard = (props: RecipeCardProps) => {
         <AppText>Instructions</AppText>
         <AppText numberOfLines={4}>{instructionsList}</AppText>
         <AppLoadingOverlay
-            loading={isRatingLoading}
-            contentStyle={styles.ratingLoadingContent}>
-            <AppRating
-              fractions={0}
-              startingValue={rating?.rating ?? 0}
-              imageSize={32}
-            />
-          </AppLoadingOverlay>
+          loading={isRatingLoading}
+          contentStyle={styles.ratingLoadingContent}
+        >
+          <AppRating
+            fractions={0}
+            startingValue={rating?.rating ?? 0}
+            imageSize={32}
+          />
+        </AppLoadingOverlay>
       </AppCard>
     </View>
   );
