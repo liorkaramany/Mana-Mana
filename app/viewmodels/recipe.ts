@@ -180,11 +180,11 @@ export const RecipeViewModel = () => {
     }
   };
 
-  const update = async (id: string, recipe: Partial<FullRecipe>) => {
+  const update = async (id: string, recipe: Partial<Recipe>) => {
     try {
       const updatedRecipe = await updateRecipeFirestore(
         id,
-        (({ rating, author, ...rest }) => ({ ...rest }))(recipe)
+        (({ author, ...rest }) => ({ ...rest }))(recipe)
       );
       // Update cached recipe in SQLite
       await saveCachedRecipeSQLite(id, updatedRecipe);
