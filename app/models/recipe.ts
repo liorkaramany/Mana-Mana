@@ -139,13 +139,7 @@ const updateRecipe = async (id: string, recipe: Partial<Recipe>) => {
     await updateRecipeImage(recipeSnap.ref, recipe.image);
   }
 
-  const recipeData = recipeSnap.data();
-
-  return {
-    id,
-    ...recipeData,
-    author: await findUserDetailsById(recipeData.author),
-  };
+  return await findRecipeById(id);
 };
 
 const rateRecipe = async (

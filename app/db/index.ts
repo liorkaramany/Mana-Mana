@@ -91,12 +91,10 @@ const getCachedRecipes = async (): Promise<FullRecipe[]> => {
 
 const findRecipeById = async (id: string): Promise<FullRecipe | null> => {
   try {
-    console.log("keren1");
     const results = await databaseInstance.getFirstAsync(
       "SELECT * FROM recipe WHERE id = ?;",
       [id]
     );
-    console.log("keren2");
     if (results) {
       const { id, data } = results;
       return { id, ...JSON.parse(data) } as FullRecipe;
