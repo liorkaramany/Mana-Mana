@@ -49,6 +49,7 @@ export default function App() {
     useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [deletingRecipe, setDeletingRecipe] = useState<boolean>(false);
+  const [signingOut, setSigningOut] = useState<boolean>(false);
 
   if (!loaded) {
     return null;
@@ -58,6 +59,7 @@ export default function App() {
     navigation: NativeStackNavigationProp<StackParamList>
   ) => {
     try {
+      setSigningOut(true);
       await signOut();
       navigation.reset({
         index: 0,
@@ -70,6 +72,8 @@ export default function App() {
         text1: "Oh no!",
         text2: "There was a problem signing you out, please try again.",
       });
+    } finally {
+      setSigningOut(false);
     }
   };
 
@@ -162,7 +166,7 @@ export default function App() {
                   onClose={() => setSignOutModalVisible(false)}
                   onSignOut={() => handleSignOut(navigation)}
                 />
-                <SignOutModalLoading visible={true} />
+                <SignOutModalLoading visible={signingOut} />
               </>
             </View>
           ),
