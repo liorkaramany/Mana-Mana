@@ -15,6 +15,7 @@ import {
   RecipeRating,
 } from "../models/recipe";
 import {
+  UserDetails,
   UserNotFoundError,
   findUserDetailsById as findUserDetailsFirestore,
 } from "../models/user";
@@ -129,13 +130,20 @@ export const RecipeViewModel = () => {
     }
   };
 
-  const create = async (recipe: FullRecipe) => {
+  const create = async (user: UserDetails, recipe: Recipe) => {
     try {
-      const newRecipeId = await createRecipeFirestore(recipe);
+      const newRecipeId = await createRecipeFirestore({
+        ...recipe,
+        author: user.id,
+      });
       // Save new recipe to SQLite cache
-      await saveCachedRecipeSQLite(newRecipeId, recipe);
+      await saveCachedRecipeSQLite(newRecipeId, { ...recipe, author: user });
       return newRecipeId;
     } catch (error) {
+      if (error instanceof UserNotFoundError) {
+        throw error;
+      }
+
       throw new Error("Failed to create recipe.");
     }
   };

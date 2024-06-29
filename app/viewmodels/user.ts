@@ -12,7 +12,7 @@ import {
 
 export const UserViewModel = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentUserDetais, setCurrentUserDetails] =
+  const [currentUserDetails, setCurrentUserDetails] =
     useState<UserDetails | null>(null);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export const UserViewModel = () => {
 
   return {
     currentUser,
-    currentUserDetais,
+    currentUserDetails,
     signUp,
     signIn,
     signOut,
