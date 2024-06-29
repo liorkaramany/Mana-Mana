@@ -35,8 +35,10 @@ export const RecipeViewModel = () => {
       const cachedRecipes = await getCachedRecipesSQLite();
       
       if (cachedRecipes.length > 0) {
+        console.log("recipes from cache");
         return cachedRecipes;
       } else {
+        console.log("recipes not from cache");
         const firestoreRecipes = await findRecipesFirestore();
         
         // Save recipes and images to SQLite cache for future use
@@ -84,7 +86,7 @@ export const RecipeViewModel = () => {
     try {
       const newRecipe = await createRecipeFirestore(recipe);
       // Save new recipe to SQLite cache
-      await saveCachedRecipeSQLite(newRecipe.id, newRecipe);
+      await saveCachedRecipeSQLite(newRecipe, recipe);
       return newRecipe;
     } catch (error) {
       throw new Error("Failed to create recipe.");
@@ -156,7 +158,6 @@ export const RecipeViewModel = () => {
   const deleteRecipe = async (id: string) => {
     try {
       await deleteRecipeFirestore(id);
-      // Remove cached recipe from SQLite
       await deleteCachedRecipeSQLite(id);
     } catch (error) {
       throw new Error("Failed to delete recipe.");

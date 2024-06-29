@@ -1,31 +1,41 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { initializeDatabase, saveCachedRecipe, deleteCachedRecipe } from './index';
+import { saveCachedRecipe, deleteCachedRecipe } from './index';
 
-const synchronizeRecipesWithFirestore = () => {
+export const RecipeSynchronizer = () => {
   useEffect(() => {
-    console.log("keren1");
-    const unsubscribe = firestore()
-      .collection('recipes')
-      .onSnapshot(async (snapshot) => {
-        snapshot.docChanges().forEach(async (change) => {
-            console.log("keren2");
-          const recipeId = change.doc.id;
-          const recipeData = change.doc.data();
+    const synchronizeRecipesWithFirestore = async () => {
+      console.log('Synchronizing recipes...');
+      const unsubscribe = firestore()
+        .collection('recipes')
+        .onSnapshot(
+          (snapshot) => {
+            console.log('Snapshot changes:', snapshot.docChanges());
+            snapshot.docChanges().forEach(async (change) => {
+              const recipeId = change.doc.id;
+              const recipeData = change.doc.data();
 
-          if (change.type === 'added' || change.type === 'modified') {
-            await saveCachedRecipe(recipeId, recipeData);
+              console.log("Change type: " + change.type);
+
+              if (change.type === 'added' || change.type === 'modified') {
+                await saveCachedRecipe(recipeId, recipeData);
+              }
+
+              if (change.type === 'removed') {
+                await deleteCachedRecipe(recipeId);
+              }
+            });
+          },
+          (error) => {
+            console.error('Error in Firestore snapshot listener:', error);
           }
+        );
 
-          if (change.type === 'removed') {
-            await deleteCachedRecipe(recipeId);
-          }
-        });
-      });
+      return () => unsubscribe();
+    };
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
+    synchronizeRecipesWithFirestore();
   }, []);
-};
 
-export default synchronizeRecipesWithFirestore;
+  return null;
+};

@@ -2,29 +2,24 @@ import { FullRecipe, Recipe } from '../models/recipe';
 import * as SQLite from 'expo-sqlite';
 
 const DATABASE_NAME = 'cache.db';
-let databaseInstance: SQLite.SQLiteDatabase | null;
+let databaseInstance: SQLite.SQLiteDatabase;
 
 const initializeDatabase = async () => {
   try {
     databaseInstance = await SQLite.openDatabaseAsync(DATABASE_NAME);
+    console.log("Database instance: " + databaseInstance);
 
-    console.log("database instance " + databaseInstance);
+    await databaseInstance.execAsync(`          
+          CREATE TABLE IF NOT EXISTS recipe (
+            id TEXT PRIMARY KEY,
+            data TEXT
+          );
 
-    await databaseInstance.withTransactionAsync(async (tx: any) => {
-      await databaseInstance.execAsync(`
-        CREATE TABLE IF NOT EXISTS cached_recipes (
-          id TEXT PRIMARY KEY,
-          data TEXT NOT NULL
-        );
-      `);
-
-      await databaseInstance.execAsync(`
-        CREATE TABLE IF NOT EXISTS cached_images (
-          imageUrl TEXT PRIMARY KEY,
-          imageData BLOB NOT NULL
-        );
-      `);
-    });
+          CREATE TABLE IF NOT EXISTS image (
+            imageUrl TEXT PRIMARY KEY,
+            imageData BLOB
+          );
+        `);
 
     console.log('Database initialized');
   } catch (error) {
@@ -34,19 +29,23 @@ const initializeDatabase = async () => {
 
 const saveCachedRecipe = async (recipeId: string, recipeData: FullRecipe) => {
   try {
-    databaseInstance = await SQLite.openDatabaseAsync(DATABASE_NAME);
-    console.log("database instance " + databaseInstance);
+    console.log("Saving recipe to cache:", recipeId);
 
-    await databaseInstance.withTransactionAsync(async (tx: any) => {
+    if (!databaseInstance) {
+      throw new Error('Database instance is not initialized.');
+    }
+
+    await databaseInstance.withExclusiveTransactionAsync((async () => {
       await databaseInstance.execAsync(
         `
-        INSERT OR REPLACE cached_recipes (id, data)
-        VALUES (?, ?)
+        INSERT OR REPLACE INTO recipe (id, data)
+        VALUES (?, ?);
         `,
         [recipeId, JSON.stringify(recipeData)]
       );
-    });
-    console.log("Cached recipe saved");
+    }));
+
+    console.log("Cached recipe saved:", recipeId);
   } catch (error) {
     console.error('Error saving cached recipe:', error);
     throw error;
@@ -56,10 +55,10 @@ const saveCachedRecipe = async (recipeId: string, recipeData: FullRecipe) => {
 const getCachedRecipes = async (): Promise<FullRecipe[]> => {
   try {
     databaseInstance = await SQLite.openDatabaseAsync(DATABASE_NAME);
-    console.log("database instance " + databaseInstance);
 
-    const results = await databaseInstance.execAsync('SELECT * FROM cached_recipes;');
+    const results = await databaseInstance.execAsync('SELECT * FROM recipe;');
     if (results && results[0]?.rows.length > 0) {
+      console.log("fetched " + results[0]?.rows.length);
       const recipes: FullRecipe[] = [];
       for (let i = 0; i < results[0].rows.length; i++) {
         const { id, data } = results[0].rows.item(i);
@@ -78,7 +77,7 @@ const getCachedRecipes = async (): Promise<FullRecipe[]> => {
 const findRecipeById = async (id: string): Promise<FullRecipe | null> => {
   try {
     console.log("keren1");
-    const results = await databaseInstance?.execAsync('SELECT * FROM cached_recipes WHERE id = ?;', [id]);
+    const results = await databaseInstance.execAsync('SELECT * FROM recipe WHERE id = ?;', [id]);
     console.log("keren2");
     if (results && results[0].rows.length > 0) {
       console.log("keren3");
@@ -97,9 +96,9 @@ const findRecipeById = async (id: string): Promise<FullRecipe | null> => {
 
 const deleteCachedRecipe = async (id: string) => {
   try {
-    await databaseInstance.withTransactionAsync(async (tx: any) => {
-      await databaseInstance.execAsync('DELETE FROM cached_recipes WHERE id = ?;', [id]);
-    });
+    await databaseInstance.withExclusiveTransactionAsync((async () => {
+    await databaseInstance.execAsync('DELETE FROM recipe WHERE id = ?;', [id]);
+    }));
     console.log(`Cached recipe with ID ${id} deleted`);
   } catch (error) {
     console.error('Error deleting cached recipe:', error);
@@ -110,16 +109,17 @@ const deleteCachedRecipe = async (id: string) => {
 const saveCachedImage = async (imageUrl: string, imageData: Blob) => {
   try {
     if (imageUrl && imageData) {
-    await databaseInstance?.withTransactionAsync(async (tx: any) => {
       console.log("url now " + imageUrl);
+
+      await databaseInstance.withExclusiveTransactionAsync((async () => {
       await databaseInstance.execAsync(
         `
-        INSERT OR REPLACE INTO cached_images (imageUrl, imageData)
+        INSERT OR REPLACE INTO image (imageUrl, imageData)
         VALUES (?, ?);
         `,
         [imageUrl, imageData]
       );
-    });
+    }));
     console.log("Cached image saved");
   }
   } catch (error) {
@@ -130,10 +130,7 @@ const saveCachedImage = async (imageUrl: string, imageData: Blob) => {
 
 const getCachedImages = async (): Promise<{ id: number; imageUrl: string; imageData: Blob }[]> => {
   try {
-    // databaseInstance = await SQLite.openDatabaseAsync(DATABASE_NAME);
-    // console.log("database instance " + databaseInstance);
-
-    const results = await databaseInstance.execAsync('SELECT * FROM cached_images;');
+    const results = await databaseInstance.execAsync('SELECT * FROM image;');
     if (results[0].rows.length > 0) {
       const images: { id: number; imageUrl: string; imageData: Blob }[] = [];
       for (let i = 0; i < results[0].rows.length; i++) {
@@ -153,7 +150,7 @@ const getCachedImageByUrl = async (imageUrl: string): Promise<{ id: number; imag
   try {
     console.log("Fetching cached image by URL:", imageUrl);
 
-    const results = await databaseInstance.execAsync('SELECT * FROM cached_images WHERE imageUrl = ?;', [imageUrl]);
+    const results = await databaseInstance.execAsync('SELECT * FROM image WHERE imageUrl = ?;', [imageUrl]);
     console.log("Query results:", results);
 
     if (results && results[0].rows.length > 0) {

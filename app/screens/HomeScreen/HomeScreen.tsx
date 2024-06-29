@@ -5,7 +5,7 @@ import { DeleteModal } from "@/app/components/DeleteModal";
 import { RecipeCard } from "@/app/components/RecipeCard";
 import { Colors } from "@/app/config/Colors";
 import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
-import { FullRecipe } from "@/app/models/recipe";
+import { FullRecipe, findRecipes } from "@/app/models/recipe";
 import { UserDetails } from "@/app/models/user";
 import { StackParamList } from "@/app/types/navigation";
 import { RecipeViewModel } from "@/app/viewmodels/recipe";
@@ -25,7 +25,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
 
   const [search, setSearch] = useState<string>("");
 
-  const { find: findRecipes, deleteRecipe } = RecipeViewModel();
+  const { deleteRecipe, findRecipes } = RecipeViewModel();
 
   const {
     loading: loading,

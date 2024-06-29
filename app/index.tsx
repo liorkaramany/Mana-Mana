@@ -24,7 +24,7 @@ import { DeleteModal } from "./components/DeleteModal";
 import { RecipeViewModel } from "./viewmodels/recipe";
 import { View } from "react-native";
 import { initializeDatabase } from "./db";
-import synchronizeRecipesWithFirestore from "./db/synchronizeRecipesWithFirestore";
+import { RecipeSynchronizer } from "./db/synchronizeRecipesWithFirestore";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -40,13 +40,15 @@ export default function App() {
   });
 
   useEffect(() => {
+    const initDB = async () => {
+      await initializeDatabase();
+    };
+
+    initDB();
+    
     if (loaded) {
       SplashScreen.hideAsync();
     }
-
-    // Initialize database when component mounts
-    initializeDatabase()
-    synchronizeRecipesWithFirestore();
   }, [loaded]);
 
   const [signOutModalVisible, setSignOutModalVisible] = useState<boolean>(false);
@@ -100,6 +102,7 @@ export default function App() {
           contentStyle: { backgroundColor: Colors.background },
           headerRight: () => (
             <View style={{flexDirection: "row"}}>
+              <RecipeSynchronizer />
               {route.name == "ViewRecipe" && route.params?.userId == currentUser?.uid && (
                 <>
                   <MyRecipeOptionsMenu
