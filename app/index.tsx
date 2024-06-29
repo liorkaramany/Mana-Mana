@@ -23,6 +23,8 @@ import { MyRecipeOptionsMenu } from "./components/MyRecipeOptionsMenu";
 import { DeleteModal } from "./components/DeleteModal";
 import { RecipeViewModel } from "./viewmodels/recipe";
 import { View } from "react-native";
+import { initializeDatabase } from "./db";
+import { listenForRecipesChanges, listenForUsersChanges } from "./db/firestoreChangesListeners";
 import { styles } from "./components/styles";
 import { SignOutModalLoading } from "./components/SignOutModalLoading";
 
@@ -40,6 +42,15 @@ export default function App() {
   });
 
   useEffect(() => {
+    const initDB = async () => {
+      await initializeDatabase();
+    };
+
+    listenForRecipesChanges((error) => {});
+    listenForUsersChanges((error) => {});
+
+    initDB();
+    
     if (loaded) {
       SplashScreen.hideAsync();
     }
