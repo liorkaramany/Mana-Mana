@@ -24,8 +24,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 0,
     width: 32,
   },
-  rating: {
-    marginTop: 12,
-    alignSelf: "flex-start",
+  ratingLoadingContent: {
+    flex: 0,
   },
 });

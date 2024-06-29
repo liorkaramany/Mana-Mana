@@ -1,4 +1,4 @@
-import { FullRecipe } from "@/app/models/recipe";
+import { FullRecipe, RecipeRatingNotFoundError, findRecipeRating } from "@/app/models/recipe";
 import Feather from "@expo/vector-icons/Feather";
 import { TouchableOpacity, View } from "react-native";
 import { AppButton } from "../AppButton";
@@ -9,6 +9,9 @@ import { UserWithAvatar } from "../UserWithAvatar";
 import { styles } from "./styles";
 import { UserViewModel } from "@/app/viewmodels/user";
 import { UserDetails } from "@/app/models/user";
+import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
+import Toast from "react-native-toast-message";
+import { AppLoadingOverlay } from "../AppLoadingOverlay";
 
 export type RecipeCardProps = Pick<
   AppCardProps,
@@ -24,6 +27,37 @@ export type RecipeCardProps = Pick<
 export const RecipeCard = (props: RecipeCardProps) => {
   const { recipe, onEdit, onDelete, isInUserFeed, onUserPressed, ...rest } = props;
   const { currentUser } = UserViewModel();
+
+  const { loading: isRatingLoading, response: rating } = useAsyncFocused({
+    action: () =>
+      currentUser == null
+        ? Promise.resolve(null)
+        : findRecipeRating(recipe.id, currentUser.uid),
+    dependencies: [recipe.id, currentUser?.uid],
+    onError: (error) => {
+      if (error instanceof RecipeRatingNotFoundError) {
+        console.log(
+          `No rating found: ViewRecipe > findRecipeRating(${recipe.id}, ${
+            currentUser!.uid
+          }):`,
+          error
+        );
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Oh no!",
+          text2:
+            "There was a problem getting your up to date rating of the recipe.",
+        });
+        console.log(
+          `Error: ViewRecipe > findRecipeRating(${recipe.id}, ${
+            currentUser!.uid
+          }):`,
+          error
+        );
+      }
+    },
+  });
 
   const ingredientsList = recipe.ingredients
     .map((ingredient) => `\u2022 ${ingredient.name}: ${ingredient.amount}`)
@@ -66,12 +100,15 @@ export const RecipeCard = (props: RecipeCardProps) => {
         <AppText numberOfLines={4}>{ingredientsList}</AppText>
         <AppText>Instructions</AppText>
         <AppText numberOfLines={4}>{instructionsList}</AppText>
-        <AppRating
-          style={styles.rating}
-          startingValue={recipe.rating ?? 0}
-          readonly
-          imageSize={32}
-        />
+        <AppLoadingOverlay
+            loading={isRatingLoading}
+            contentStyle={styles.ratingLoadingContent}>
+            <AppRating
+              fractions={0}
+              startingValue={rating?.rating ?? 0}
+              imageSize={32}
+            />
+          </AppLoadingOverlay>
       </AppCard>
     </View>
   );

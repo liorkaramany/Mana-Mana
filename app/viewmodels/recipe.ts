@@ -164,8 +164,6 @@ export const RecipeViewModel = () => {
   const rate = async (id: string, userId: string, recipeRating: number) => {
     try {
       const ratedRecipe = await rateRecipeFirestore(id, userId, recipeRating);
-      // Update cached recipe rating in SQLite
-      await saveCachedRecipeSQLite(id, ratedRecipe);
       return ratedRecipe;
     } catch (error) {
       throw new Error("Failed to rate recipe.");
