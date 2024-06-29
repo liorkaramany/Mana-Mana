@@ -12,12 +12,17 @@ import {
   Recipe,
 } from "../models/recipe";
 import {
+  findUserDetailsById as findUserDetailsFirestore
+} from "../models/user";
+import {
   saveCachedRecipe as saveCachedRecipeSQLite,
   getCachedRecipes as getCachedRecipesSQLite,
   deleteCachedRecipe as deleteCachedRecipeSQLite,
   findRecipeById as findRecipeByIdSQLite,
   saveCachedImage as saveCachedImageSQLite,
   getCachedImageByUrl as getCachedImageByUrlSQLite,
+  getCachedUserDetails as getCachedUserDetailsSQLite,
+  saveCachedUserDetails as saveCachedUserDetailsSQLite
 } from "../db/index";
 
 export const RecipeViewModel = () => {
@@ -36,6 +41,8 @@ export const RecipeViewModel = () => {
       
       if (cachedRecipes.length > 0) {
         console.log("recipes from cache");
+        await fetchUserDetailsForRecipes(cachedRecipes)
+
         return cachedRecipes;
       } else {
         console.log("recipes not from cache");
@@ -58,10 +65,34 @@ export const RecipeViewModel = () => {
           })
         );
 
+        await fetchUserDetailsForRecipes(firestoreRecipes);
         return firestoreRecipes;
       }
     } catch (error) {
       throw new Error("Failed to fetch recipes.");
+    }
+  };
+
+  const fetchUserDetailsForRecipes = async (recipes: FullRecipe[]) => {
+    try {
+      await Promise.all(
+        recipes.map(async (recipe) => {
+          if (!recipe.author) return; // Skip if author details are already present
+          
+          const cachedUserDetails = await getCachedUserDetailsSQLite(recipe.author.id);
+          if (cachedUserDetails) {
+            console.log("User details from cache for author:", recipe.author.id);
+            recipe.author = cachedUserDetails;
+          } else {
+            console.log("Fetching user details from Firestore for author:", recipe.author.id);
+            const userDetails = await findUserDetailsFirestore(recipe.author.id);
+            recipe.author = userDetails;
+            await saveCachedUserDetailsSQLite(recipe.author.id, userDetails); // Cache user details
+          }
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching user details:", error);
     }
   };
 
@@ -98,6 +129,7 @@ export const RecipeViewModel = () => {
       const cachedRecipe = await findRecipeByIdSQLite(id);
       
       if (cachedRecipe) {
+        await fetchUserDetailsForRecipes([cachedRecipe]);
         return cachedRecipe;
       } else {
         const firestoreRecipe = await findRecipeByIdFirestore(id);
@@ -110,6 +142,7 @@ export const RecipeViewModel = () => {
         }
         
         await saveCachedRecipeSQLite(firestoreRecipe.id, firestoreRecipe);
+        await fetchUserDetailsForRecipes([firestoreRecipe]);
         return firestoreRecipe;
       }
     } catch (error) {
