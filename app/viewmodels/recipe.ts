@@ -10,9 +10,13 @@ import {
   findUserRecipes as findUserRecipesFirestore,
   deleteRecipeModel as deleteRecipeFirestore,
   Recipe,
+  RecipeRatingNotFoundError,
+  RecipeNotFoundError,
+  RecipeRating,
 } from "../models/recipe";
 import {
-  findUserDetailsById as findUserDetailsFirestore
+  UserNotFoundError,
+  findUserDetailsById as findUserDetailsFirestore,
 } from "../models/user";
 import {
   saveCachedRecipe as saveCachedRecipeSQLite,
@@ -22,7 +26,7 @@ import {
   saveCachedImage as saveCachedImageSQLite,
   getCachedImageByUrl as getCachedImageByUrlSQLite,
   getCachedUserDetails as getCachedUserDetailsSQLite,
-  saveCachedUserDetails as saveCachedUserDetailsSQLite
+  saveCachedUserDetails as saveCachedUserDetailsSQLite,
 } from "../db/index";
 
 export const RecipeViewModel = () => {
@@ -38,16 +42,16 @@ export const RecipeViewModel = () => {
   const findRecipes = async () => {
     try {
       const cachedRecipes = await getCachedRecipesSQLite();
-      
+
       if (cachedRecipes.length > 0) {
         console.log("recipes from cache");
-        await fetchUserDetailsForRecipes(cachedRecipes)
+        await fetchUserDetailsForRecipes(cachedRecipes);
 
         return cachedRecipes;
       } else {
         console.log("recipes not from cache");
         const firestoreRecipes = await findRecipesFirestore();
-        
+
         // Save recipes and images to SQLite cache for future use
         await Promise.all(
           firestoreRecipes.map(async (recipe) => {
@@ -78,14 +82,24 @@ export const RecipeViewModel = () => {
       await Promise.all(
         recipes.map(async (recipe) => {
           if (!recipe.author) return; // Skip if author details are already present
-          
-          const cachedUserDetails = await getCachedUserDetailsSQLite(recipe.author.id);
+
+          const cachedUserDetails = await getCachedUserDetailsSQLite(
+            recipe.author.id
+          );
           if (cachedUserDetails) {
-            console.log("User details from cache for author:", recipe.author.id);
+            console.log(
+              "User details from cache for author:",
+              recipe.author.id
+            );
             recipe.author = cachedUserDetails;
           } else {
-            console.log("Fetching user details from Firestore for author:", recipe.author.id);
-            const userDetails = await findUserDetailsFirestore(recipe.author.id);
+            console.log(
+              "Fetching user details from Firestore for author:",
+              recipe.author.id
+            );
+            const userDetails = await findUserDetailsFirestore(
+              recipe.author.id
+            );
             recipe.author = userDetails;
             await saveCachedUserDetailsSQLite(recipe.author.id, userDetails); // Cache user details
           }
@@ -100,7 +114,7 @@ export const RecipeViewModel = () => {
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
-      
+
       // Save image data to SQLite cache
       await saveCachedImageSQLite(imageUrl, blob);
 
@@ -127,45 +141,69 @@ export const RecipeViewModel = () => {
   const findById = async (id: string) => {
     try {
       const cachedRecipe = await findRecipeByIdSQLite(id);
-      
+
       if (cachedRecipe) {
         await fetchUserDetailsForRecipes([cachedRecipe]);
         return cachedRecipe;
       } else {
         const firestoreRecipe = await findRecipeByIdFirestore(id);
-        
+
         // Check and cache image if not already cached
-        const cachedImage = await getCachedImageByUrlSQLite(firestoreRecipe.image);
+        const cachedImage = await getCachedImageByUrlSQLite(
+          firestoreRecipe.image
+        );
         if (!cachedImage) {
           const imageData = await fetchAndCacheImage(firestoreRecipe.image);
           firestoreRecipe.image = imageData;
         }
-        
+
         await saveCachedRecipeSQLite(firestoreRecipe.id, firestoreRecipe);
         await fetchUserDetailsForRecipes([firestoreRecipe]);
         return firestoreRecipe;
       }
     } catch (error) {
+      if (error instanceof RecipeNotFoundError) {
+        throw error;
+      }
+
       throw new Error("Recipe not found.");
     }
   };
 
   const update = async (id: string, recipe: Partial<FullRecipe>) => {
     try {
-      const updatedRecipe = await updateRecipeFirestore(id, recipe);
+      const updatedRecipe = await updateRecipeFirestore(
+        id,
+        (({ id, rating, author, ...rest }) => ({ ...rest }))(recipe)
+      );
       // Update cached recipe in SQLite
       await saveCachedRecipeSQLite(id, updatedRecipe);
       return updatedRecipe;
     } catch (error) {
+      if (error instanceof RecipeNotFoundError) {
+        throw error;
+      }
+
       throw new Error("Failed to update recipe.");
     }
   };
 
-  const rate = async (id: string, userId: string, recipeRating: number) => {
+  const rate = async (
+    id: string,
+    userId: string,
+    recipeRating: RecipeRating
+  ) => {
     try {
       const ratedRecipe = await rateRecipeFirestore(id, userId, recipeRating);
       return ratedRecipe;
     } catch (error) {
+      if (
+        error instanceof RecipeNotFoundError ||
+        error instanceof UserNotFoundError
+      ) {
+        throw error;
+      }
+
       throw new Error("Failed to rate recipe.");
     }
   };
@@ -174,6 +212,13 @@ export const RecipeViewModel = () => {
     try {
       return await findRecipeRatingFirestore(id, userId);
     } catch (error) {
+      if (
+        error instanceof RecipeNotFoundError ||
+        error instanceof RecipeRatingNotFoundError
+      ) {
+        throw error;
+      }
+
       throw new Error("Failed to find recipe rating.");
     }
   };
@@ -182,6 +227,13 @@ export const RecipeViewModel = () => {
     try {
       return await findUserRecipesFirestore(userId);
     } catch (error) {
+      if (
+        error instanceof UserNotFoundError ||
+        error instanceof RecipeNotFoundError
+      ) {
+        throw error;
+      }
+
       throw new Error("Failed to find user recipes.");
     }
   };
@@ -191,6 +243,10 @@ export const RecipeViewModel = () => {
       await deleteRecipeFirestore(id);
       await deleteCachedRecipeSQLite(id);
     } catch (error) {
+      if (error instanceof RecipeNotFoundError) {
+        throw error;
+      }
+
       throw new Error("Failed to delete recipe.");
     }
   };
