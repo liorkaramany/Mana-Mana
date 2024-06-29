@@ -1,7 +1,11 @@
 import { categoriesApi } from "@/app/api/categoriesApi";
 import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 import { AppText } from "@/app/components/AppText";
-import { RecipeForm, RecipeFormValueType } from "@/app/components/RecipeForm";
+import {
+  RecipeForm,
+  RecipeFormReturnType,
+  RecipeFormValueType,
+} from "@/app/components/RecipeForm";
 import { Colors } from "@/app/config/Colors";
 import { useAsync } from "@/app/hooks/useAsync";
 import { StackParamList } from "@/app/types/navigation";
@@ -13,6 +17,8 @@ import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 import { UserViewModel } from "@/app/viewmodels/user";
 import { StackActions } from "@react-navigation/native";
+import { AppButton } from "@/app/components/AppButton";
+import { CategoriesError } from "@/app/components/CategoriesError";
 
 export type NewRecipeScreenProps = NativeStackScreenProps<
   StackParamList,
@@ -26,14 +32,15 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
   const { currentUser } = UserViewModel();
 
   const {
-    loading,
-    error,
+    loading: loadingCategoryResponse,
+    error: categoryResponseError,
     response: categoryResponse,
+    refetch: refetchCategoryResponse,
   } = useAsync({ action: categoriesApi.getAllCategories });
 
   const [uploading, setUploading] = useState<boolean>(false);
 
-  const uploadRecipe = async (recipe: RecipeFormValueType) => {
+  const uploadRecipe = async (recipe: RecipeFormReturnType) => {
     if (currentUser == null) {
       Toast.show({
         type: "error",
@@ -71,6 +78,19 @@ export const NewRecipe = (props: NewRecipeScreenProps) => {
       }
     }
   };
+
+  if (loadingCategoryResponse) {
+    return (
+      <View>
+        <AppText>Loading categories...</AppText>
+      </View>
+    );
+  }
+
+  if (categoryResponseError || categoryResponse == null) {
+    console.log(categoryResponseError?.message);
+    return <CategoriesError onTryAgain={refetchCategoryResponse} />;
+  }
 
   if (categoryResponse != null)
     return (

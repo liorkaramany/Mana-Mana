@@ -17,6 +17,7 @@ import { styles } from "./styles";
 import Toast from "react-native-toast-message";
 import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 import { NoRecipesFound } from "@/app/components/NoRecipesFound";
+import { RecipesError } from "@/app/components/RecipesError";
 
 export type HomeScreenProps = NativeStackScreenProps<StackParamList, "Home">;
 
@@ -33,7 +34,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
     error,
     refetch: refetchRecipes,
   } = useAsyncFocused({
-    action: () => findRecipes(),
+    action: async () => await findRecipes(),
     dependencies: [],
   });
 
@@ -51,11 +52,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
   if (error || recipes == null) {
     console.log("Error:", error?.message);
 
-    return (
-      <View>
-        <AppText>Could not get the recipes.</AppText>
-      </View>
-    );
+    return <RecipesError onTryAgain={refetchRecipes} />;
   }
 
   const filteredRecipes = recipes.filter((recipe) =>

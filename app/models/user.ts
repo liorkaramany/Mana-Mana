@@ -7,13 +7,13 @@ import {
   DocumentReference,
   collection,
   doc,
-  getDoc,
+  getDocFromServer,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../firebase";
 import { converter } from "../firebase/utilities";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { uriToBlob } from "../utilities";
 
 export type UserDetails = {
@@ -61,7 +61,7 @@ const signOutUser = async () => {
 const findUserSnapById = async (id: string) => {
   const documentReference = doc(usersCollection, id);
 
-  const userSnap = await getDoc(documentReference);
+  const userSnap = await getDocFromServer(documentReference);
 
   if (!userSnap.exists()) {
     throw new UserNotFoundError(id);

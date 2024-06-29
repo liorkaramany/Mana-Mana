@@ -6,6 +6,7 @@ import { AppButton } from "../AppButton";
 import { AppImagePicker } from "../AppImagePicker";
 import { AppTextInput } from "../AppTextInput";
 import { styles } from "./styles";
+import { AppText } from "../AppText";
 
 export type EditableUserDetailsSectionValue = Pick<
   UserDetails,
@@ -40,13 +41,24 @@ export const EditableUserDetailsSection = (
 
   const [innerUserDetails, setInnerUserDetails] =
     useState<EditableUserDetailsSectionValue>(defaultUserDetails);
+  const [wasConfirmPressed, setWasConfirmPressed] = useState<boolean>(false);
 
   const finalUserDetails = userDetails ?? innerUserDetails;
   const finalOnUserDetailsChange = onUserDetailsChange ?? setInnerUserDetails;
 
   const emptyName = finalUserDetails.name.length === 0;
 
-  const confirmDisabled = emptyName;
+  const invalidDetails = emptyName;
+
+  const handleConfirmPress = () => {
+    if (!wasConfirmPressed) {
+      setWasConfirmPressed(true);
+    }
+
+    if (!invalidDetails) {
+      onConfirm?.(finalUserDetails);
+    }
+  };
 
   return (
     <View style={[styles.container, style]}>
@@ -64,20 +76,23 @@ export const EditableUserDetailsSection = (
           style={styles.profileImage}
           removeButtonStyle={styles.removeProfileImageButton}
         />
-        <AppTextInput
-          placeholder="Who are you?"
-          size="lg"
-          value={finalUserDetails.name}
-          onChangeText={(name) =>
-            finalOnUserDetailsChange({ ...finalUserDetails, name })
-          }
-          style={styles.name}
-        />
+        <View style={styles.nameContainer}>
+          <AppTextInput
+            placeholder="Who are you?"
+            size="lg"
+            value={finalUserDetails.name}
+            onChangeText={(name) =>
+              finalOnUserDetailsChange({ ...finalUserDetails, name })
+            }
+          />
+          {wasConfirmPressed && emptyName && (
+            <AppText style={styles.errorText}>A name cannot be empty</AppText>
+          )}
+        </View>
       </View>
       <View style={styles.actionsContainer}>
         <AppButton
-          disabled={confirmDisabled}
-          onPress={() => onConfirm?.(finalUserDetails)}
+          onPress={handleConfirmPress}
           variant="neutral"
           style={styles.actionButton}
           title={<Feather name="check" size={20} />}

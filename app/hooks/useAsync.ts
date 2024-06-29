@@ -22,6 +22,7 @@ export const useAsync = <Response>(
 
   const fetch = async () => {
     setLoading(true);
+    setError(undefined);
 
     try {
       const response = await action();
