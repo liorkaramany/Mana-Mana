@@ -185,16 +185,18 @@ export const RecipeViewModel = () => {
     try {
       const updatedRecipe = await updateRecipeFirestore(
         id,
-        (({ author, ...rest }) => ({ ...rest }))(recipe)
+        (({ author, rating, id, ...rest }) => ({ ...rest }))(recipe)
       );
+
       // Update cached recipe in SQLite
       await saveCachedRecipeSQLite(id, updatedRecipe);
       return updatedRecipe;
     } catch (error) {
+      console.log(error);
+
       if (error instanceof RecipeNotFoundError) {
         throw error;
       }
-
       throw new Error("Failed to update recipe.");
     }
   };

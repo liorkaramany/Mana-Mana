@@ -87,10 +87,7 @@ export const EditRecipe = (props: EditRecipeScreenProps) => {
   if (loadingCategoryResponse) {
     return (
       <View style={styles.loadingContainer}>
-        <Image
-          source={loadingGif}
-          style={styles.loadingGif}
-        />
+        <Image source={loadingGif} style={styles.loadingGif} />
         <AppText>Loading categories...</AppText>
       </View>
     );
