@@ -1,7 +1,8 @@
 import { AppCard } from "@/app/components/AppCard";
+import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 import { AppRating } from "@/app/components/AppRating";
 import { AppText } from "@/app/components/AppText";
-import { Colors } from "@/app/config/Colors";
+import { RecipeByIdError } from "@/app/components/RecipeByIdError";
 import { useAsyncFocused } from "@/app/hooks/useAsyncFocused";
 import { RecipeRatingNotFoundError } from "@/app/models/recipe";
 import { StackParamList } from "@/app/types/navigation";
@@ -9,18 +10,9 @@ import { RecipeViewModel } from "@/app/viewmodels/recipe";
 import { UserViewModel } from "@/app/viewmodels/user";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, SafeAreaView, ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { styles } from "./styles";
-import { AppLoadingOverlay } from "@/app/components/AppLoadingOverlay";
 
 export type ViewRecipeProps = NativeStackScreenProps<
   StackParamList,
@@ -40,13 +32,13 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
     findById: findRecipeById,
     findRecipeRating,
     rate,
-    deleteRecipe,
   } = RecipeViewModel();
 
   const {
     loading: isLoading,
     response: recipe,
     error,
+    refetch: refetchRecipe,
   } = useAsyncFocused({
     action: () => findRecipeById(recipeId),
     dependencies: [recipeId],
@@ -96,34 +88,16 @@ export const ViewRecipe = (props: ViewRecipeProps) => {
   }
 
   if (error || recipe == null) {
+    console.log(error?.message);
+
     return (
       <SafeAreaView style={styles.container}>
-        <AppText>Error: {error?.message}</AppText>
+        <RecipeByIdError onTryAgain={refetchRecipe} />
       </SafeAreaView>
     );
   }
 
   const { author, title, tags, ingredients, instructions } = recipe;
-
-  const handleEditPress = () => {
-    navigation.navigate("EditRecipe", { recipeId });
-  };
-
-  const handleDeletePress = async () => {
-    if (!recipeId) {
-      console.log("Missing recipe ID for deletion.");
-      return;
-    }
-
-    try {
-      await deleteRecipe(recipeId);
-
-      console.log("Recipe deleted successfully!");
-      navigation.goBack(); // Navigate back after successful deletion
-    } catch (error) {
-      console.log("Error deleting recipe:", error);
-    }
-  };
 
   const handleRating = async (ratingValue: number) => {
     const showErrorToast = () => {
